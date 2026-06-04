@@ -10,6 +10,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- html2pdf.js for exporting slides -->
+  <script src="/js/vendor/html2pdf.bundle.min.js"></script>
+
   
   <style>
     /* CSS Variables matching main app's global.css */
@@ -414,6 +417,67 @@
       padding: 2px 6px;
       font-family: monospace;
     }
+
+    /* PDF Export Button Styling */
+    .export-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      color: var(--text-secondary);
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: 'Outfit', sans-serif;
+    }
+    .export-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.3);
+      color: #fff;
+    }
+    
+    .spinner {
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Print styles */
+    @media print {
+      body {
+        background: #0a0a0f !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .orb, .bottom-bar, .top-bar, .export-btn, .demo-btn {
+        display: none !important;
+      }
+      .presentation-container {
+        padding: 0 !important;
+        margin: 0 !important;
+        height: auto !important;
+      }
+      .slides-wrapper {
+        display: block !important;
+        height: auto !important;
+      }
+      .slide {
+        position: relative !important;
+        display: flex !important;
+        opacity: 1 !important;
+        transform: none !important;
+        page-break-after: always !important;
+        break-after: page !important;
+        height: 100vh !important;
+        justify-content: center !important;
+        padding: 60px !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -431,7 +495,13 @@
         MeetMod
         <span class="logo-badge">IIT Ropar</span>
       </div>
-      <div class="presentation-title">Project Presentation</div>
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <button class="export-btn" id="export-pdf-btn" onclick="exportPDF()">
+          <i data-lucide="download" style="width: 14px; height: 14px;"></i>
+          Export PDF
+        </button>
+        <div class="presentation-title">Project Presentation</div>
+      </div>
     </div>
 
     <!-- Slides Wrapper -->
@@ -771,6 +841,94 @@
 
     // Initial setup call
     updateSlides();
+
+    // PDF Export function using html2pdf.js
+    function exportPDF() {
+      const btn = document.getElementById('export-pdf-btn');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<i data-lucide="loader" class="spinner" style="width: 14px; height: 14px; margin-right: 6px;"></i> Generating...';
+      btn.disabled = true;
+      if (window.lucide) window.lucide.createIcons({ nodes: [btn] });
+
+      // Create temporary presentation view container for high quality export
+      const tempContainer = document.createElement('div');
+      tempContainer.style.cssText = `
+        width: 1120px;
+        background: #0a0a0f;
+        color: #ffffff;
+        font-family: 'Inter', sans-serif;
+      `;
+
+      // Copy each slide
+      slides.forEach((slide, idx) => {
+        const clone = slide.cloneNode(true);
+        clone.style.cssText = `
+          width: 1120px;
+          height: 630px;
+          display: flex !important;
+          flex-direction: column;
+          justify-content: center;
+          padding: 60px;
+          box-sizing: border-box;
+          position: relative;
+          opacity: 1 !important;
+          transform: none !important;
+          background: #0a0a0f;
+          page-break-after: always;
+          break-after: page;
+        `;
+        
+        // Remove interactive items/links that look bad on printed documents
+        const demoLink = clone.querySelector('.demo-btn');
+        if (demoLink) demoLink.style.display = 'none';
+
+        // Add a slide footer to the printed document
+        const footer = document.createElement('div');
+        footer.style.cssText = `
+          position: absolute;
+          bottom: 24px;
+          left: 60px;
+          right: 60px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          font-size: 10px;
+          color: rgba(255, 255, 255, 0.25);
+          border-top: 1px solid rgba(255, 255, 255, 0.05);
+          padding-top: 12px;
+          font-family: 'Inter', sans-serif;
+        `;
+        footer.innerHTML = `
+          <div>MeetMod — Participation Analytics Platform</div>
+          <div>IIT Ropar Intern | Slide ${idx + 1}</div>
+        `;
+        clone.appendChild(footer);
+        tempContainer.appendChild(clone);
+      });
+
+      document.body.appendChild(tempContainer);
+
+      const opt = {
+        margin: 0,
+        filename: 'MeetMod_Project_Presentation.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, backgroundColor: '#0a0a0f' },
+        jsPDF: { unit: 'px', format: [1120, 630], orientation: 'landscape' }
+      };
+
+      html2pdf().set(opt).from(tempContainer).save().then(() => {
+        document.body.removeChild(tempContainer);
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        if (window.lucide) window.lucide.createIcons({ nodes: [btn] });
+      }).catch(err => {
+        console.error('PDF export failed:', err);
+        document.body.removeChild(tempContainer);
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        if (window.lucide) window.lucide.createIcons({ nodes: [btn] });
+      });
+    }
   </script>
 </body>
 </html>
