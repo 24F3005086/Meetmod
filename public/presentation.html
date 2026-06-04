@@ -14,23 +14,25 @@
   <script src="/js/vendor/html2pdf.bundle.min.js"></script>
   
   <style>
-    /* CSS Variables matching main app's global.css */
+    /* Premium Visual Design Tokens */
     :root {
-      --bg-primary: #08080c;
-      --bg-secondary: #0f0f15;
-      --bg-tertiary: #141424;
-      --bg-glass: rgba(255, 255, 255, 0.03);
-      --accent-primary: #6c5ce7;
-      --accent-secondary: #00cec9;
-      --accent-gradient: linear-gradient(135deg, #6c5ce7, #00cec9);
+      --bg-primary: #030307;
+      --bg-secondary: #08080f;
+      --bg-tertiary: #0e0e1a;
+      --bg-glass: rgba(255, 255, 255, 0.02);
+      --accent-purple: #7f5af0;
+      --accent-cyan: #00ebc7;
+      --accent-pink: #ff007f;
+      --accent-yellow: #f9c80e;
+      --accent-gradient: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+      --accent-pink-gradient: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
       --text-primary: #ffffff;
-      --text-secondary: rgba(255, 255, 255, 0.7);
+      --text-secondary: rgba(255, 255, 255, 0.75);
       --text-muted: rgba(255, 255, 255, 0.45);
       --radius-lg: 16px;
       --radius-xl: 24px;
-      --glass-blur: blur(20px);
-      --shadow-lg: 0 20px 50px rgba(0,0,0,0.7);
-      --transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      --shadow-lg: 0 20px 50px rgba(0,0,0,0.8);
+      --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     * {
@@ -49,28 +51,44 @@
       position: relative;
     }
 
-    /* Ambient glowing background orbs */
+    /* Ambient glowing background orbs with subtle animation */
     .orb {
       position: absolute;
       border-radius: 50%;
       filter: blur(140px);
-      opacity: 0.12;
+      opacity: 0.16;
       z-index: 1;
       pointer-events: none;
+      animation: drift 15s ease-in-out infinite alternate;
     }
     .orb-1 {
-      width: 40vw;
-      height: 40vw;
-      background: var(--accent-primary);
-      top: -10%;
+      width: 45vw;
+      height: 45vw;
+      background: var(--accent-purple);
+      top: -15%;
       left: -10%;
     }
     .orb-2 {
       width: 50vw;
       height: 50vw;
-      background: var(--accent-secondary);
-      bottom: -15%;
+      background: var(--accent-cyan);
+      bottom: -20%;
       right: -10%;
+      animation-delay: -5s;
+    }
+    .orb-3 {
+      width: 30vw;
+      height: 30vw;
+      background: var(--accent-pink);
+      top: 30%;
+      left: 50%;
+      opacity: 0.08;
+      animation-delay: -10s;
+    }
+
+    @keyframes drift {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(40px, 30px) scale(1.1); }
     }
 
     /* Slide Container */
@@ -82,7 +100,7 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 30px 50px;
+      padding: 30px 60px;
     }
 
     /* Top Bar */
@@ -91,17 +109,19 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      padding-bottom: 15px;
     }
     .logo {
       font-family: 'Outfit', sans-serif;
-      font-size: 24px;
+      font-size: 26px;
       font-weight: 800;
       background: var(--accent-gradient);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
     .logo-badge {
       font-size: 9px;
@@ -110,9 +130,9 @@
       text-transform: uppercase;
       padding: 3px 8px;
       border-radius: 20px;
-      background: rgba(108, 92, 231, 0.15);
-      border: 1px solid rgba(108, 92, 231, 0.3);
-      color: #6c5ce7;
+      background: rgba(127, 90, 240, 0.15);
+      border: 1px solid rgba(127, 90, 240, 0.3);
+      color: #7f5af0;
       margin-left: 4px;
       -webkit-text-fill-color: initial;
     }
@@ -139,7 +159,7 @@
       width: 100%;
       height: 100%;
       opacity: 0;
-      transform: scale(0.96) translateY(15px);
+      transform: scale(0.97) translateY(10px);
       pointer-events: none;
       transition: var(--transition);
       display: flex;
@@ -155,14 +175,15 @@
     /* Slide Titles & Layouts */
     h1 {
       font-family: 'Outfit', sans-serif;
-      font-size: 50px;
+      font-size: 54px;
       font-weight: 800;
       line-height: 1.15;
-      margin-bottom: 16px;
+      margin-bottom: 20px;
+      letter-spacing: -1px;
     }
     .slide-title {
       font-family: 'Outfit', sans-serif;
-      font-size: 34px;
+      font-size: 38px;
       font-weight: 700;
       margin-bottom: 16px;
       background: linear-gradient(to right, #fff, var(--text-secondary));
@@ -192,38 +213,60 @@
     }
 
     .card {
-      background: var(--bg-glass);
-      backdrop-filter: var(--glass-blur);
-      -webkit-backdrop-filter: var(--glass-blur);
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.06);
       border-radius: var(--radius-lg);
-      padding: 24px;
+      padding: 28px;
       transition: all 0.3s ease;
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: transparent;
+      transition: all 0.3s ease;
+    }
+    .card:hover::before {
+      background: var(--accent-gradient);
     }
     .card:hover {
-      border-color: rgba(108, 92, 231, 0.25);
-      transform: translateY(-3px);
+      border-color: rgba(127, 90, 240, 0.3);
+      transform: translateY(-4px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
       background: rgba(255,255,255,0.04);
     }
     .card-icon {
-      width: 42px;
-      height: 42px;
-      border-radius: 10px;
-      background: rgba(108, 92, 231, 0.1);
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(127, 90, 240, 0.1);
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #6c5ce7;
-      margin-bottom: 16px;
+      color: var(--accent-purple);
+      margin-bottom: 18px;
+      box-shadow: 0 0 15px rgba(127, 90, 240, 0.2);
     }
+    .card.purple .card-icon { color: var(--accent-purple); background: rgba(127, 90, 240, 0.1); box-shadow: 0 0 15px rgba(127, 90, 240, 0.2); }
+    .card.cyan .card-icon { color: var(--accent-cyan); background: rgba(0, 235, 199, 0.1); box-shadow: 0 0 15px rgba(0, 235, 199, 0.2); }
+    .card.pink .card-icon { color: var(--accent-pink); background: rgba(255, 0, 127, 0.1); box-shadow: 0 0 15px rgba(255, 0, 127, 0.2); }
+    .card.yellow .card-icon { color: var(--accent-yellow); background: rgba(249, 200, 14, 0.1); box-shadow: 0 0 15px rgba(249, 200, 14, 0.2); }
+    
     .card-title {
       font-family: 'Outfit', sans-serif;
-      font-size: 18px;
+      font-size: 19px;
       font-weight: 700;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
+      color: #fff;
     }
     .card-desc {
       font-size: 13px;
@@ -238,8 +281,8 @@
     .bullet-list li {
       position: relative;
       padding-left: 24px;
-      margin-bottom: 12px;
-      font-size: 14px;
+      margin-bottom: 14px;
+      font-size: 14.5px;
       color: var(--text-secondary);
       line-height: 1.5;
     }
@@ -247,12 +290,12 @@
       content: '';
       position: absolute;
       left: 0;
-      top: 6px;
-      width: 6px;
-      height: 6px;
+      top: 7px;
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
-      background: var(--accent-secondary);
-      box-shadow: 0 0 8px var(--accent-secondary);
+      background: var(--accent-cyan);
+      box-shadow: 0 0 8px var(--accent-cyan);
     }
     .bullet-list li strong {
       color: #fff;
@@ -260,12 +303,12 @@
 
     /* Math block */
     .math-block {
-      background: rgba(255, 255, 255, 0.015);
-      border: 1px dashed rgba(255, 255, 255, 0.08);
-      border-radius: 10px;
-      padding: 16px;
-      margin: 12px 0;
-      text-align: center;
+      background: rgba(0, 235, 199, 0.02);
+      border: 1px solid rgba(0, 235, 199, 0.15);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 15px 0;
+      box-shadow: 0 0 20px rgba(0, 235, 199, 0.05);
     }
 
     /* System Architecture Visual Layout */
@@ -278,22 +321,24 @@
       gap: 5px;
     }
     .arch-node {
-      background: var(--bg-glass);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      border-radius: 10px;
-      padding: 12px 14px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 16px 14px;
       text-align: center;
       flex: 1;
       max-width: 170px;
       z-index: 3;
+      box-shadow: var(--shadow-lg);
     }
     .arch-node.highlight {
-      border-color: #6c5ce7;
-      background: rgba(108, 92, 231, 0.05);
+      border-color: var(--accent-purple);
+      background: rgba(127, 90, 240, 0.08);
+      box-shadow: 0 0 20px rgba(127, 90, 240, 0.15);
     }
     .arch-node-title {
       font-weight: 700;
-      font-size: 12px;
+      font-size: 13px;
       margin-bottom: 4px;
       color: #fff;
     }
@@ -303,7 +348,7 @@
     }
     .arch-arrow {
       height: 2px;
-      background: linear-gradient(to right, rgba(108, 92, 231, 0.4), rgba(0, 206, 201, 0.4));
+      background: linear-gradient(to right, rgba(127, 90, 240, 0.4), rgba(0, 235, 199, 0.4));
       flex: 1;
       margin: 0 8px;
       position: relative;
@@ -313,11 +358,151 @@
       position: absolute;
       right: 0;
       top: -3px;
-      width: 7px;
-      height: 7px;
-      border-top: 2px solid rgba(0, 206, 201, 0.6);
-      border-right: 2px solid rgba(0, 206, 201, 0.6);
+      width: 8px;
+      height: 8px;
+      border-top: 2px solid rgba(0, 235, 199, 0.6);
+      border-right: 2px solid rgba(0, 235, 199, 0.6);
       transform: rotate(45deg);
+    }
+
+    /* Speech Overlap Visual */
+    .timeline-visual {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin: 15px 0;
+      background: rgba(255,255,255,0.01);
+      border: 1px solid rgba(255,255,255,0.03);
+      padding: 20px;
+      border-radius: 12px;
+    }
+    .timeline-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .timeline-label {
+      width: 120px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      font-family: 'Outfit', sans-serif;
+    }
+    .timeline-track {
+      flex: 1;
+      height: 28px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 6px;
+      position: relative;
+    }
+    .timeline-block-a {
+      position: absolute;
+      left: 10%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(90deg, rgba(127, 90, 240, 0.2), rgba(127, 90, 240, 0.4));
+      border: 1px solid var(--accent-purple);
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: bold;
+      color: #fff;
+    }
+    .timeline-block-b {
+      position: absolute;
+      left: 45%;
+      width: 45%;
+      height: 100%;
+      background: linear-gradient(90deg, rgba(255, 0, 127, 0.3), rgba(255, 0, 127, 0.6));
+      border: 1px solid var(--accent-pink);
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: bold;
+      color: #fff;
+      box-shadow: 0 0 15px rgba(255, 0, 127, 0.4);
+    }
+    .timeline-collision {
+      position: absolute;
+      left: 45%;
+      width: 15%;
+      height: 100%;
+      background: rgba(249, 200, 14, 0.2);
+      border-left: 2px dashed var(--accent-yellow);
+      border-right: 2px dashed var(--accent-yellow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-weight: 800;
+      color: var(--accent-yellow);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Intervention Steps */
+    .steps-flow {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+      position: relative;
+    }
+    .steps-flow::after {
+      content: '';
+      position: absolute;
+      left: 10%;
+      right: 10%;
+      top: 25px;
+      height: 2px;
+      background: rgba(255,255,255,0.06);
+      z-index: 1;
+    }
+    .step-node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 22%;
+      z-index: 2;
+    }
+    .step-circle {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: var(--bg-tertiary);
+      border: 2px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+      font-family: 'Outfit', sans-serif;
+      margin-bottom: 12px;
+      transition: all 0.3s ease;
+    }
+    .step-node:hover .step-circle {
+      transform: scale(1.1);
+      box-shadow: 0 0 15px var(--hover-color);
+      border-color: var(--hover-color);
+    }
+    .step-node-title {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: #fff;
+      text-align: center;
+    }
+    .step-node-desc {
+      font-size: 10.5px;
+      color: var(--text-muted);
+      text-align: center;
+      line-height: 1.4;
+      padding: 0 5px;
     }
 
     /* Bottom Nav Control Bar */
@@ -327,6 +512,8 @@
       align-items: center;
       margin-top: 15px;
       position: relative;
+      border-top: 1px solid rgba(255,255,255,0.04);
+      padding-top: 15px;
     }
     .controls {
       display: flex;
@@ -336,8 +523,8 @@
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 50%;
-      width: 40px;
-      height: 40px;
+      width: 42px;
+      height: 42px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -348,7 +535,7 @@
     }
     .nav-btn:hover {
       background: rgba(255, 255, 255, 0.08);
-      border-color: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.2);
     }
     .slide-counter {
       font-size: 13px;
@@ -389,18 +576,18 @@
       background: var(--accent-gradient);
       border: none;
       color: #0a0a0f;
-      padding: 10px 20px;
+      padding: 10px 22px;
       border-radius: 30px;
       font-family: 'Outfit', sans-serif;
       font-weight: 700;
       font-size: 14px;
       cursor: pointer;
       text-decoration: none;
-      box-shadow: 0 0 15px rgba(108, 92, 231, 0.25);
+      box-shadow: 0 0 15px rgba(127, 90, 240, 0.25);
       transition: all 0.3s ease;
     }
     .demo-btn:hover {
-      box-shadow: 0 0 25px rgba(0, 206, 201, 0.4);
+      box-shadow: 0 0 25px rgba(0, 235, 199, 0.4);
       transform: translateY(-2px);
     }
 
@@ -428,8 +615,8 @@
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 20px;
       color: var(--text-secondary);
-      padding: 6px 12px;
-      font-size: 11px;
+      padding: 6px 14px;
+      font-size: 12px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s ease;
@@ -451,12 +638,8 @@
 
     /* Print styles */
     @media print {
-      @page {
-        size: landscape;
-        margin: 0;
-      }
       body {
-        background: #08080c !important;
+        background: #030307 !important;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
       }
@@ -483,6 +666,13 @@
         justify-content: center !important;
         padding: 40px !important;
       }
+      .card {
+        background: rgba(255, 255, 255, 0.02) !important;
+        border-color: rgba(255, 255, 255, 0.08) !important;
+      }
+      .arch-node {
+        background: rgba(255, 255, 255, 0.02) !important;
+      }
     }
   </style>
 </head>
@@ -491,13 +681,14 @@
   <!-- Ambient orbs -->
   <div class="orb orb-1"></div>
   <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
 
   <div class="presentation-container">
     
     <!-- Top Bar -->
     <div class="top-bar">
       <div class="logo">
-        <i data-lucide="activity" style="width: 24px; height: 24px; color: #6c5ce7;"></i>
+        <i data-lucide="activity" style="width: 24px; height: 24px; color: #7f5af0;"></i>
         MeetMod
         <span class="logo-badge">IIT Ropar</span>
       </div>
@@ -534,19 +725,20 @@
       <!-- Slide 2: The Problem -->
       <div class="slide" id="slide-2">
         <h2 class="slide-title">The Participation Imbalance Problem</h2>
+        <p class="subtitle">Virtual learning environments suffer from structural inequities during open group discussions.</p>
         <div class="grid-2">
-          <div class="card">
+          <div class="card pink">
             <div class="card-icon"><i data-lucide="alert-triangle" style="width: 20px; height: 20px;"></i></div>
             <div class="card-title">Conversational Monopoly</div>
             <div class="card-desc">
-              In virtual classrooms or discussions, statistically 20% of dominant voices occupy over 80% of talking time. This forces quieter students to retreat into passivity (the free-rider dilemma).
+              In virtual classrooms, statistically <strong>20% of dominant voices</strong> occupy over **80% of talking time**. This forces quieter students to retreat into passivity—creating a "free-rider" learning dilemma.
             </div>
           </div>
-          <div class="card">
+          <div class="card purple">
             <div class="card-icon"><i data-lucide="eye-off" style="width: 20px; height: 20px;"></i></div>
             <div class="card-title">Platform Passivity</div>
             <div class="card-desc">
-              Existing software (Zoom, Teams, Meet) are passive communication streams. They lack dynamic tools to track individual participation rates or intervene algorithmically in real-time.
+              Existing software like Zoom, Teams, and Google Meet are passive channels. They do not track individual participation distribution or intervene algorithmically to balance speech time.
             </div>
           </div>
         </div>
@@ -555,22 +747,22 @@
       <!-- Slide 3: The Solution -->
       <div class="slide" id="slide-3">
         <h2 class="slide-title">The Solution: MeetMod</h2>
-        <p class="subtitle">An active, analytical web platform built to balance group discussions.</p>
+        <p class="subtitle">An active, analytical meeting environment built to balance dialogue and engagement.</p>
         <div class="grid-3">
-          <div class="card">
+          <div class="card purple">
             <div class="card-icon"><i data-lucide="bar-chart-2" style="width: 20px; height: 20px;"></i></div>
             <div class="card-title">Real-Time Metrics</div>
-            <div class="card-desc">Tracks exact speaking duration, percentage distribution, and inter-peer interruptions on a live sidebar dashboard.</div>
+            <div class="card-desc">Calculates and renders exact speaking duration, percentage distribution, and peer-to-peer interruption dynamics on a live sidebar dashboard.</div>
           </div>
-          <div class="card">
+          <div class="card pink">
             <div class="card-icon"><i data-lucide="shield-alert" style="width: 20px; height: 20px;"></i></div>
             <div class="card-title">Active Moderation</div>
-            <div class="card-desc">Automatically prompts warning cues and applies temporary forced-mutes to monopolizing speakers using an engine rule loop.</div>
+            <div class="card-desc">Enforces server-guided warning triggers, full screen overlays, and automatic audio track disables for monopolizing speakers to restore conversational balance.</div>
           </div>
-          <div class="card">
+          <div class="card cyan">
             <div class="card-icon"><i data-lucide="sparkles" style="width: 20px; height: 20px;"></i></div>
-            <div class="card-title">Quiet Nudges</div>
-            <div class="card-desc">Detects inactive students who have been silent for extended windows and pushes friendly alerts encouraging contribution.</div>
+            <div class="card-title">Quiet Nudging</div>
+            <div class="card-desc">Detects silent members who have not contributed and fires friendly notifications to invite their unique insights to the topic.</div>
           </div>
         </div>
       </div>
@@ -578,7 +770,7 @@
       <!-- Slide 4: System Architecture -->
       <div class="slide" id="slide-4">
         <h2 class="slide-title">System Architecture</h2>
-        <p class="subtitle">A framework-free Client-Server architecture optimizing real-time media feeds and data archiving.</p>
+        <p class="subtitle">A lightweight framework-free architecture mapping WebRTC media flow, signaling, and data archiving.</p>
         
         <div class="arch-flow">
           <div class="arch-node highlight">
@@ -593,7 +785,7 @@
           <div class="arch-arrow"></div>
           <div class="arch-node">
             <div class="arch-node-title">WebRTC Broker</div>
-            <div class="arch-node-subtitle">PeerJS Mesh Signaling</div>
+            <div class="arch-node-subtitle">PeerJS Mesh Routing</div>
           </div>
           <div class="arch-arrow"></div>
           <div class="arch-node highlight">
@@ -603,8 +795,8 @@
         </div>
 
         <ul class="bullet-list" style="margin-top: 15px;">
-          <li><strong>WebRTC mesh:</strong> Standardized direct peer audio/video connections bypass complex server routing.</li>
-          <li><strong>Client-Side VAD (Voice Activity Detection):</strong> Locally handles speech amplitude checking using <code>Hark.js</code>, avoiding server CPU strain.</li>
+          <li><strong>Direct WebRTC:</strong> Coordinates audio and video connections directly between peers to minimize latency and server bandwidth usage.</li>
+          <li><strong>Client-Side VAD (Voice Activity Detection):</strong> Runs locally in each user's browser using <code>Hark.js</code> to track voice activity levels.</li>
         </ul>
       </div>
 
@@ -614,32 +806,32 @@
         <div class="grid-2">
           <div>
             <p class="subtitle" style="font-size: 14px; margin-bottom: 12px; line-height: 1.5;">
-              Instead of standard deviation, we adopt the economic **Gini Coefficient** ($G$) to evaluate how evenly conversation time is distributed among the $n$ participants.
+              To quantify conversation equality mathematically, we repurpose the economic **Gini Coefficient** ($G$), a measure of statistical dispersion:
             </p>
             <div class="math-block">
-              <div style="display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Outfit', sans-serif; font-size: 20px; color: #00cec9;">
+              <div style="display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Outfit', sans-serif; font-size: 20px; color: var(--accent-cyan);">
                 <span>G = </span>
-                <div style="display: inline-flex; flex-direction: column; align-items: center; font-size: 14px;">
-                  <span style="border-bottom: 2px solid #00cec9; padding: 0 10px; font-weight: bold;">&sum;<sub>i=1</sub><sup>n</sup> &sum;<sub>j=1</sub><sup>n</sup> |t<sub>i</sub> - t<sub>j</sub>|</span>
-                  <span style="padding: 0 10px; font-weight: bold;">2n &sum;<sub>i=1</sub><sup>n</sup> t<sub>i</sub></span>
+                <div style="display: inline-flex; flex-direction: column; align-items: center; font-size: 14px; margin-left: 5px;">
+                  <span style="border-bottom: 2px solid var(--accent-cyan); padding: 0 10px; font-weight: bold; color: #fff;">&sum;<sub>i=1</sub><sup>n</sup> &sum;<sub>j=1</sub><sup>n</sup> |t<sub>i</sub> - t<sub>j</sub>|</span>
+                  <span style="padding: 0 10px; font-weight: bold; color: #fff;">2n &sum;<sub>i=1</sub><sup>n</sup> t<sub>i</sub></span>
                 </div>
               </div>
             </div>
             <ul class="bullet-list">
-              <li><strong>G = 0.00:</strong> Perfect conversation equality.</li>
-              <li><strong>G = 1.00:</strong> Complete monopoly (1 speaker).</li>
+              <li><strong>G = 0.00:</strong> Complete equity (everyone speaks exactly the same).</li>
+              <li><strong>G = 1.00:</strong> Complete inequality (one speaker dominates).</li>
             </ul>
           </div>
-          <div class="card" style="border-left: 4px solid var(--accent-secondary); justify-content: center;">
+          <div class="card cyan" style="border-left: 4px solid var(--accent-cyan); justify-content: center;">
             <div class="card-title">User-Facing Equity Score</div>
             <p class="card-desc" style="font-size: 13px; margin-bottom: 10px;">
-              To make this highly readable, the platform displays the **Equity Score**:
+              For intuitive real-time tracking, this is converted to an **Equity Score**:
             </p>
-            <div style="font-size: 24px; font-weight: 800; color: #55efc4; margin-bottom: 8px; font-family: 'Outfit';">
-              Score = (1 - G) × 100
+            <div style="font-size: 26px; font-weight: 800; color: #55efc4; margin-bottom: 8px; font-family: 'Outfit';">
+              Equity Score = (1 - G) × 100
             </div>
             <p class="card-desc">
-              Displayed in a circular progress ring on both the live dashboard and the final session report dashboard.
+              Rendered on a circular progress ring on the live dashboard and the final session report.
             </p>
           </div>
         </div>
@@ -648,55 +840,56 @@
       <!-- Slide 6: Interruption Collision Engine -->
       <div class="slide" id="slide-6">
         <h2 class="slide-title">Interruption Collision Engine</h2>
-        <div class="grid-2">
-          <div>
-            <ul class="bullet-list">
-              <li><strong>Overlap Detection:</strong> When Client B fires a <code>speaking-start</code> signal while Client A is active, the server detects a collision.</li>
-              <li><strong>Dynamic Increments:</strong> 
-                <ul>
-                  <li>Interrupter receives +1 to <em>Given</em> metrics.</li>
-                  <li>Active speaker receives +1 to <em>Received</em> metrics.</li>
-                </ul>
-              </li>
-              <li><strong>Visual Evidence:</strong> Immediately logs to the meeting's public timeline (e.g. <em>"Student A interrupted Professor"</em>).</li>
-            </ul>
+        <p class="subtitle">Detects real-time conversational overlap collisions on the signaling server.</p>
+        
+        <div class="timeline-visual">
+          <div class="timeline-row">
+            <span class="timeline-label">User A (Active)</span>
+            <div class="timeline-track">
+              <div class="timeline-block-a">Active Speaking Track</div>
+            </div>
           </div>
-          <div class="card" style="padding: 20px; font-family: monospace; font-size: 11px; color: #55efc4; background: rgba(0,0,0,0.3); border-color: rgba(0, 206, 201, 0.15); justify-content: center;">
-            <div style="color: var(--text-muted); margin-bottom: 6px;">// Socket.io Collision Snippet</div>
-            socket.on('speaking-start', () => {<br>
-            &nbsp;&nbsp;const active = tracker.getActiveSpeakers(room);<br>
-            &nbsp;&nbsp;if (active.length > 0) {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;active.forEach(speaker => {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tracker.logInterruption(interrupterId, speaker.id);<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;io.to(room).emit('interruption-occurred', { ... });<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;});<br>
-            &nbsp;&nbsp;}<br>
-            });
+          <div class="timeline-row">
+            <span class="timeline-label">User B (Interrupter)</span>
+            <div class="timeline-track">
+              <div class="timeline-block-b">Speaking Start</div>
+              <div class="timeline-collision">Collision!</div>
+            </div>
           </div>
         </div>
+
+        <ul class="bullet-list" style="margin-top: 10px;">
+          <li><strong>Metric Attribution:</strong> Increments **Given** count for the interrupter and **Received** count for the speaker.</li>
+          <li><strong>Timeline Logs:</strong> Instantly broadcasts the interruption event to update the session timeline.</li>
+        </ul>
       </div>
 
       <!-- Slide 7: AI-Powered Interventions -->
       <div class="slide" id="slide-7">
         <h2 class="slide-title">AI-Powered Interventions</h2>
-        <p class="subtitle">Configurable rule thresholds applied recursively on the server-side update loop:</p>
+        <p class="subtitle">Configurable rule thresholds evaluated recursively on the active speaking update loop:</p>
         
-        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
-          <div class="card" style="padding: 16px; border-top: 3px solid #ffb142;">
-            <div style="font-weight: 700; margin-bottom: 4px; font-size: 14px; color: #fff;">1. Warning Alert</div>
-            <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.5;">Triggers after 120s of continuous monologue. Alerts speaker with a toast popup.</div>
+        <div class="steps-flow">
+          <div class="step-node" style="--hover-color: var(--accent-yellow);">
+            <div class="step-circle" style="border-color: rgba(249, 200, 14, 0.3); color: var(--accent-yellow);">1</div>
+            <div class="step-node-title">Warning Alert</div>
+            <div class="step-node-desc">Monologue time reaches 120s. Shows a toast alert suggesting wrap-up.</div>
           </div>
-          <div class="card" style="padding: 16px; border-top: 3px solid #ff7675;">
-            <div style="font-weight: 700; margin-bottom: 4px; font-size: 14px; color: #fff;">2. Countdown</div>
-            <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.5;">Triggers at 180s. A high-intensity full screen overlay forces visual focus.</div>
+          <div class="step-node" style="--hover-color: var(--accent-pink);">
+            <div class="step-circle" style="border-color: rgba(255, 0, 127, 0.3); color: var(--accent-pink);">2</div>
+            <div class="step-node-title">Countdown</div>
+            <div class="step-circle-badge"></div>
+            <div class="step-node-desc">Monologue reaches 180s. Triggers a full-screen countdown overlay.</div>
           </div>
-          <div class="card" style="padding: 16px; border-top: 3px solid #d63031;">
-            <div style="font-weight: 700; margin-bottom: 4px; font-size: 14px; color: #fff;">3. Force Mute</div>
-            <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.5;">Triggers at 200s. Mutes local audio capture via peer tracks on the client.</div>
+          <div class="step-node" style="--hover-color: #ff3838;">
+            <div class="step-circle" style="border-color: rgba(255, 56, 56, 0.3); color: #ff3838;">3</div>
+            <div class="step-node-title">Force Mute</div>
+            <div class="step-node-desc">Monologue reaches 200s. Client mutes local audio and notifies the room.</div>
           </div>
-          <div class="card" style="padding: 16px; border-top: 3px solid #00cec9;">
-            <div style="font-weight: 700; margin-bottom: 4px; font-size: 14px; color: #fff;">4. Inactive Nudge</div>
-            <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.5;">Identifies lowest speak percentage and prompts to invite their insights.</div>
+          <div class="step-node" style="--hover-color: var(--accent-cyan);">
+            <div class="step-circle" style="border-color: rgba(0, 235, 199, 0.3); color: var(--accent-cyan);">4</div>
+            <div class="step-node-title">Inactive Nudge</div>
+            <div class="step-node-desc">Analyzes speaking times and pushes gentle nudges to encourage participation.</div>
           </div>
         </div>
       </div>
@@ -707,22 +900,22 @@
         <div class="grid-2">
           <div>
             <ul class="bullet-list">
-              <li><strong>Entry Gating:</strong> Non-host attendees are suspended in a waiting room overlay upon joining.</li>
-              <li><strong>Interactive Toasts:</strong> Host receives immediate notifications with dedicated <strong>Admit</strong> and <strong>Decline</strong> controls.</li>
-              <li><strong>Device Security:</strong> Client-side media constraints (`getUserMedia`) are bypassed and locked until approved, preventing accidental mic/camera leaks in the lobby.</li>
-              <li><strong>Ghost Request Prevention:</strong> Socket disconnect handles removal of knocking users who leave early, automatically canceling active toasts.</li>
+              <li><strong>Entry Gating:</strong> Non-host attendees are suspended in a glassmorphic waiting screen upon joining.</li>
+              <li><strong>Interactive Alerts:</strong> Host receives real-time admission prompts containing **Admit** and **Decline** actions.</li>
+              <li><strong>Strict Device Privacy:</strong> Browser camera/microphone queries (`getUserMedia`) are bypassed and locked until approved, preventing accidental media leaks.</li>
+              <li><strong>Cleanup Handler:</strong> If a user leaves the lobby early, the server cancels the host's toast popup automatically.</li>
             </ul>
           </div>
-          <div class="card" style="background: rgba(108, 92, 231, 0.05); border-color: rgba(108, 92, 231, 0.3); justify-content: center;">
-            <div style="display: flex; gap: 8px; align-items: center; color: #6c5ce7; font-weight: 700; margin-bottom: 10px;">
+          <div class="card purple" style="border: 1px solid rgba(127, 90, 240, 0.3); justify-content: center; background: rgba(127, 90, 240, 0.03);">
+            <div style="display: flex; gap: 8px; align-items: center; color: var(--accent-purple); font-weight: 700; margin-bottom: 10px; font-size: 13px;">
               <i data-lucide="user-check" style="width: 18px; height: 18px;"></i> ADMISSION NOTIFICATION
             </div>
-            <p class="card-desc" style="margin-bottom: 12px; font-size: 13px;">
+            <p class="card-desc" style="margin-bottom: 12px; font-size: 13px; color: #fff;">
               "Student 1 wants to join this room."
             </p>
             <div style="display: flex; gap: 8px;">
-              <span style="background: #55efc4; color: #0a0a0f; padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 10px;">Admit</span>
-              <span style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 10px; color: #fff;">Decline</span>
+              <span style="background: var(--accent-cyan); color: #0a0a0f; padding: 6px 14px; border-radius: 6px; font-weight: bold; font-size: 10px; cursor: pointer; box-shadow: 0 0 10px rgba(0, 235, 199, 0.2);">Admit</span>
+              <span style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); padding: 6px 14px; border-radius: 6px; font-weight: bold; font-size: 10px; color: #fff;">Decline</span>
             </div>
           </div>
         </div>
@@ -732,14 +925,14 @@
       <div class="slide" id="slide-9">
         <h2 class="slide-title">Post-Session Analytics & Reports</h2>
         <div class="grid-2">
-          <div class="card">
+          <div class="card purple">
             <div class="card-icon"><i data-lucide="database" style="width: 20px; height: 20px;"></i></div>
             <div class="card-title">MongoDB Integration</div>
             <div class="card-desc">
               When a room becomes empty, the server compiles overall statistics, updates the <code>SessionReport</code> collection in MongoDB Atlas, and redirects students to the final dashboard.
             </div>
           </div>
-          <div class="card">
+          <div class="card cyan">
             <div class="card-icon"><i data-lucide="file-text" style="width: 20px; height: 20px;"></i></div>
             <div class="card-title">PDF Export Dashboard</div>
             <div class="card-desc">
@@ -753,15 +946,15 @@
       <div class="slide" id="slide-10">
         <h2 class="slide-title">Future Milestones</h2>
         <div class="grid-3">
-          <div class="card" style="border-bottom: 3px solid var(--accent-primary);">
+          <div class="card purple" style="border-bottom: 3px solid var(--accent-purple);">
             <div class="card-title" style="font-size: 16px;">SFU Migration</div>
             <p class="card-desc">Transition from a WebRTC P2P mesh network to an SFU framework (like LiveKit) to scale up to hundreds of concurrent class participants.</p>
           </div>
-          <div class="card" style="border-bottom: 3px solid var(--accent-primary);">
+          <div class="card pink" style="border-bottom: 3px solid var(--accent-pink);">
             <div class="card-title" style="font-size: 16px;">AI Summarizer</div>
             <p class="card-desc">Integrate OpenAI/Whisper speech-to-text models to generate automated action summaries alongside participation reports.</p>
           </div>
-          <div class="card" style="border-bottom: 3px solid var(--accent-primary);">
+          <div class="card cyan" style="border-bottom: 3px solid var(--accent-cyan);">
             <div class="card-title" style="font-size: 16px;">Network Visuals</div>
             <p class="card-desc">Add interaction social graphs visualizing who interrupts whom, mapping the social network structure of conversations.</p>
           </div>
@@ -866,7 +1059,7 @@
       const tempContainer = document.createElement('div');
       tempContainer.style.cssText = `
         width: 1000px;
-        background: #08080c;
+        background: #030307;
         color: #ffffff;
         font-family: 'Inter', sans-serif;
         box-sizing: border-box;
@@ -877,7 +1070,7 @@
         const clone = slide.cloneNode(true);
         clone.style.cssText = `
           width: 1000px;
-          height: 562px; /* 16:9 for 1000px width */
+          height: 562px; /* 16:9 aspect ratio */
           display: flex !important;
           flex-direction: column;
           justify-content: center;
@@ -886,7 +1079,7 @@
           position: relative;
           opacity: 1 !important;
           transform: none !important;
-          background: #08080c;
+          background: #030307;
           overflow: hidden;
           page-break-after: always;
           break-after: page;
@@ -919,14 +1112,16 @@
         clone.appendChild(footer);
 
         // Adjust font sizes specifically for PDF rendering to avoid overflows
-        clone.querySelectorAll('h1').forEach(el => el.style.fontSize = '36px');
-        clone.querySelectorAll('.slide-title').forEach(el => el.style.fontSize = '26px');
+        clone.querySelectorAll('h1').forEach(el => el.style.fontSize = '34px');
+        clone.querySelectorAll('.slide-title').forEach(el => el.style.fontSize = '24px');
         clone.querySelectorAll('.subtitle').forEach(el => {
-          el.style.fontSize = '13px';
-          el.style.marginBottom = '15px';
+          el.style.fontSize = '12px';
+          el.style.marginBottom = '12px';
         });
         clone.querySelectorAll('.card').forEach(el => {
-          el.style.padding = '16px';
+          el.style.padding = '18px';
+          el.style.background = 'rgba(255, 255, 255, 0.02)';
+          el.style.borderColor = 'rgba(255, 255, 255, 0.06)';
         });
         clone.querySelectorAll('.card-title').forEach(el => el.style.fontSize = '14px');
         clone.querySelectorAll('.card-desc').forEach(el => el.style.fontSize = '11px');
@@ -940,6 +1135,19 @@
         });
         clone.querySelectorAll('.arch-node-title').forEach(el => el.style.fontSize = '10px');
         clone.querySelectorAll('.arch-node-subtitle').forEach(el => el.style.fontSize = '8px');
+        clone.querySelectorAll('.timeline-visual').forEach(el => {
+          el.style.padding = '12px';
+          el.style.margin = '10px 0';
+        });
+        clone.querySelectorAll('.timeline-label').forEach(el => el.style.width = '100px');
+        clone.querySelectorAll('.step-circle').forEach(el => {
+          el.style.width = '36px';
+          el.style.height = '36px';
+          el.style.fontSize = '12px';
+          el.style.marginBottom = '6px';
+        });
+        clone.querySelectorAll('.step-node-title').forEach(el => el.style.fontSize = '11px');
+        clone.querySelectorAll('.step-node-desc').forEach(el => el.style.fontSize = '9px');
 
         tempContainer.appendChild(clone);
       });
@@ -950,7 +1158,7 @@
         margin: 0,
         filename: 'MeetMod_Project_Presentation.pdf',
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, backgroundColor: '#08080c' },
+        html2canvas: { scale: 3, useCORS: true, backgroundColor: '#030307' }, // Scale 3 for ultra-crisp print quality
         jsPDF: { unit: 'px', format: [1000, 562], orientation: 'landscape' }
       };
 
