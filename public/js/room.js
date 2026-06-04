@@ -192,6 +192,11 @@
 
   socket.on('room-state', (state) => {
     isHost = state.isHost;
+    if (isHost) {
+      document.body.classList.add('is-host');
+    } else {
+      document.body.classList.remove('is-host');
+    }
 
     if (state.participants) {
       const participants = Array.isArray(state.participants)
@@ -276,7 +281,17 @@
 
   socket.on('host-changed', ({ hostSocketId }) => {
     isHost = hostSocketId === socket.id;
-    if (isHost) notifications.show('You are now the host', 'info', 4000);
+    if (isHost) {
+      document.body.classList.add('is-host');
+      notifications.show('You are now the host', 'info', 4000);
+    } else {
+      document.body.classList.remove('is-host');
+    }
+  });
+
+  socket.on('admin-kicked', () => {
+    alert('You have been removed from the room by the host.');
+    window.location.href = '/';
   });
 
   socket.on('moderation-settings-updated', ({ config }) => {
@@ -504,12 +519,42 @@
           </span>
         </div>
       </div>
+      ${!isLocal ? `
+        <div class="host-controls">
+          <button class="btn-host-mute" title="Force Mute">
+            <i data-lucide="mic-off" style="width:14px;height:14px;"></i>
+          </button>
+          <button class="btn-host-kick" title="Kick Out">
+            <i data-lucide="user-x" style="width:14px;height:14px;"></i>
+          </button>
+        </div>
+      ` : ''}
     `;
 
     const video = tile.querySelector('video');
     if (stream) {
       video.srcObject = stream;
       video.addEventListener('loadedmetadata', () => video.play().catch(() => {}));
+    }
+
+    if (!isLocal) {
+      const muteBtn = tile.querySelector('.btn-host-mute');
+      const kickBtn = tile.querySelector('.btn-host-kick');
+
+      if (muteBtn) {
+        muteBtn.addEventListener('click', () => {
+          socket.emit('admin-mute-user', { targetSocketId: socketId });
+          notifications.show(`Forcing mute on ${name}`, 'info', 3000);
+        });
+      }
+
+      if (kickBtn) {
+        kickBtn.addEventListener('click', () => {
+          if (confirm(`Are you sure you want to remove ${name} from the room?`)) {
+            socket.emit('admin-kick-user', { targetSocketId: socketId });
+          }
+        });
+      }
     }
 
     grid.appendChild(tile);

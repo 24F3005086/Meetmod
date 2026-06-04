@@ -329,6 +329,50 @@ io.on('connection', (socket) => {
     }
   });
 
+  // ── Admin manual mute / kick (Host only) ───────────────
+  socket.on('admin-mute-user', ({ targetSocketId }) => {
+    const roomId = socketRooms.get(socket.id);
+    if (!roomId) return;
+
+    if (!roomManager.isHost(roomId, socket.id)) return;
+
+    const targetSocket = io.sockets.sockets.get(targetSocketId);
+    if (targetSocket) {
+      targetSocket.emit('moderation-mute', { reason: 'Muted by Host' });
+
+      // Stop their active speaking tracking
+      speakingTracker.stopSpeaking(roomId, targetSocketId);
+
+      // Broadcast mute status to the room
+      io.to(roomId).emit('peer-mute-changed', {
+        socketId: targetSocketId,
+        isMuted: true,
+      });
+      roomManager.updateParticipant(roomId, targetSocketId, {
+        isMuted: true,
+      });
+
+      // Update moderation engine cooldown/state
+      const modEngine = moderationEngines.get(roomId);
+      if (modEngine) {
+        modEngine.onMuted(targetSocketId);
+      }
+    }
+  });
+
+  socket.on('admin-kick-user', ({ targetSocketId }) => {
+    const roomId = socketRooms.get(socket.id);
+    if (!roomId) return;
+
+    if (!roomManager.isHost(roomId, socket.id)) return;
+
+    const targetSocket = io.sockets.sockets.get(targetSocketId);
+    if (targetSocket) {
+      targetSocket.emit('admin-kicked');
+      targetSocket.disconnect();
+    }
+  });
+
   // ── Disconnect ─────────────────────────────────────────
   socket.on('disconnect', async () => {
     try {

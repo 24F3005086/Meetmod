@@ -31,19 +31,33 @@ class WebRTCManager {
    * @param {object} mediaConstraints – getUserMedia constraints
    * @returns {Promise<MediaStream>} localStream
    */
-  async init(mediaConstraints = { video: true, audio: true }) {
+  async init(mediaConstraints = null) {
+    // Use default constraints with explicit echo cancellation if not provided
+    const constraints = mediaConstraints || {
+      video: true,
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true
+      }
+    };
+
     // Get local media stream
     try {
       this.localStream = await navigator.mediaDevices.getUserMedia(
-        mediaConstraints
+        constraints
       );
     } catch (err) {
       console.error('[WebRTC] Failed to get user media:', err);
-      // Fall back to audio only
+      // Fall back to audio only with echo cancellation
       try {
         this.localStream = await navigator.mediaDevices.getUserMedia({
           video: false,
-          audio: true,
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true
+          },
         });
       } catch (audioErr) {
         console.error('[WebRTC] Failed to get any media:', audioErr);

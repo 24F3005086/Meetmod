@@ -864,3 +864,45 @@
     position: fixed;
   }
 }
+
+/* ======================== Host controls ======================== */
+.host-controls {
+  display: none;
+}
+body.is-host .video-tile:not(#tile-local) .host-controls {
+  display: flex;
+  gap: 8px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+body.is-host .video-tile:not(#tile-local):hover .host-controls {
+  opacity: 1;
+}
+.host-controls button {
+  background: rgba(10, 10, 15, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #fff;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.host-controls button:hover {
+  background: rgba(108, 92, 231, 0.8); /* purple accent */
+  border-color: #6c5ce7;
+  transform: scale(1.1);
+}
+.host-controls button.btn-host-kick:hover {
+  background: rgba(239, 83, 80, 0.8); /* red danger */
+  border-color: #ef5350;
+}
