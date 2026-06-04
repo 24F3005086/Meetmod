@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="MeetMod — Post-Meeting Analytics Report. Equal voice metrics and participation analytics.">
+  <meta name="theme-color" content="#0a0a0f">
+  <title>MeetMod — Meeting Report</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/report.css">
+</head>
+<body>
+
+  <!-- Loading State -->
+  <div class="loading-overlay" id="loading-overlay">
+    <div class="spinner-container">
+      <div class="spinner"></div>
+      <p>Loading session report...</p>
+    </div>
+  </div>
+
+  <!-- Global Error Logger -->
+  <script>
+    window.onerror = function(message, source, lineno, colno, error) {
+      const div = document.createElement('div');
+      div.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#ff7675;color:white;padding:16px;z-index:99999;font-family:monospace;text-align:left;font-size:12px;box-shadow:0 4px 12px rgba(0,0,0,0.5);line-height:1.4;';
+      div.innerHTML = '<strong>MeetMod Client Error:</strong> ' + message + ' <br><small style="opacity:0.8;">at ' + source + ':' + lineno + ':' + colno + '</small><br><button style="margin-top:8px;background:white;color:#ff7675;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-weight:bold;" onclick="this.parentElement.remove()">Dismiss</button>';
+      document.body.appendChild(div);
+      return false;
+    };
+  </script>
+
+  <!-- Page Content Container -->
+  <div class="report-page hidden" id="report-page">
+
+    <!-- Back Navigation -->
+    <div class="nav-container">
+      <a href="/" class="back-link">
+        <i data-lucide="arrow-left" style="width:16px;height:16px;"></i>
+        Back to Home
+      </a>
+      <button class="btn btn-primary" id="btn-download">
+        <i data-lucide="download" style="width:16px;height:16px;margin-right:6px"></i>
+        Download PDF Report
+      </button>
+    </div>
+
+    <!-- Printable Report Container -->
+    <div class="report-card" id="report-content">
+
+      <!-- ====== Report Header ====== -->
+      <header class="report-header">
+        <div class="header-left">
+          <div class="logo">
+            <div class="logo-icon">
+              <i data-lucide="audio-waveform" style="width:20px;height:20px;color:#fff"></i>
+            </div>
+            <span class="logo-text">MeetMod</span>
+          </div>
+          <h1 id="report-room-name">Session Report</h1>
+          <p class="report-meta">
+            Room Code: <strong id="report-room-code">------</strong> &nbsp;|&nbsp; 
+            Date: <strong id="report-date">--/--/----</strong>
+          </p>
+        </div>
+        <div class="header-right">
+          <div class="badge badge-success">COMPLETED</div>
+        </div>
+      </header>
+
+      <!-- ====== Key Stats Grid ====== -->
+      <section class="stats-grid">
+        
+        <!-- Equity Score Ring -->
+        <div class="stat-card equity-card">
+          <div class="equity-ring">
+            <svg viewBox="0 0 108 108">
+              <defs>
+                <linearGradient id="equityGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#6c5ce7"/>
+                  <stop offset="100%" stop-color="#00cec9"/>
+                </linearGradient>
+              </defs>
+              <circle class="equity-ring-bg" cx="54" cy="54" r="48"/>
+              <circle class="equity-ring-fill" id="equity-ring-fill" cx="54" cy="54" r="48"/>
+            </svg>
+            <div class="equity-value">
+              <span class="equity-number" id="equity-score">--</span>
+              <span class="equity-label">Equity</span>
+            </div>
+          </div>
+          <div class="stat-info">
+            <h3>Meeting Equity Score</h3>
+            <p>A score of 100 represents perfectly distributed speaking time among all participants.</p>
+          </div>
+        </div>
+
+        <!-- Numeric Stats -->
+        <div class="stat-card numeric-card">
+          <div class="num-stat">
+            <div class="num-value" id="stat-duration">0:00</div>
+            <div class="num-label">Total Speaking Time</div>
+          </div>
+          <div class="num-stat">
+            <div class="num-value" id="stat-participants">0</div>
+            <div class="num-label">Participants Logged</div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ====== Visual Analytics (Charts) ====== -->
+      <section class="charts-section">
+        <h2>Visual Analytics</h2>
+        <div class="charts-grid">
+          
+          <div class="chart-container">
+            <div class="chart-title">
+              <i data-lucide="pie-chart" style="width:14px;height:14px"></i>
+              Speaking Distribution
+            </div>
+            <div class="chart-wrapper">
+              <canvas id="chart-distribution"></canvas>
+            </div>
+          </div>
+
+          <div class="chart-container">
+            <div class="chart-title">
+              <i data-lucide="bar-chart-horizontal" style="width:14px;height:14px"></i>
+              Participant Contribution
+            </div>
+            <div class="chart-wrapper">
+              <canvas id="chart-ranking"></canvas>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ====== Participant Details Table ====== -->
+      <section class="details-section">
+        <h2>Participant Details</h2>
+        <div class="table-container">
+          <table class="report-table">
+            <thead>
+              <tr>
+                <th>Participant</th>
+                <th style="text-align: right;">Total Speaking Time</th>
+                <th style="text-align: right;">Longest Monologue</th>
+                <th style="text-align: right;">Turns Taken</th>
+                <th style="text-align: right;">Contribution</th>
+              </tr>
+            </thead>
+            <tbody id="report-table-body">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </div>
+
+  </div>
+
+  <!-- ====== Vendor Libraries (Served Locally) ====== -->
+  <!-- Chart.js -->
+  <script src="js/vendor/chart.umd.min.js"></script>
+  <!-- Lucide Icons -->
+  <script src="js/vendor/lucide.min.js"></script>
+  <!-- html2pdf.js -->
+  <script src="js/vendor/html2pdf.bundle.min.js"></script>
+
+  <!-- ====== App Scripts ====== -->
+  <script src="js/reportView.js"></script>
+
+</body>
+</html>

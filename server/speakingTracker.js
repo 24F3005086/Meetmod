@@ -26,11 +26,14 @@ class SpeakingTracker {
    * @param {string} roomId
    * @param {string} socketId
    */
-  addParticipant(roomId, socketId) {
+  addParticipant(roomId, socketId, name) {
     const room = this.rooms.get(roomId);
     if (!room) return;
 
+    if (room.has(socketId)) return;
+
     room.set(socketId, {
+      name: name || 'Unknown',
       totalTime: 0,          // Total speaking time in ms
       currentStart: null,     // Timestamp when current speech started
       isSpeaking: false,
@@ -56,8 +59,8 @@ class SpeakingTracker {
         this._finishSpeaking(data);
       }
     }
-
-    room.delete(socketId);
+    // We do NOT delete the participant data so it remains
+    // in the final report even if they leave before the meeting ends.
   }
 
   /**
@@ -234,11 +237,15 @@ class SpeakingTracker {
       totalMeetingTime,
       participantCount: speakingData.length,
       equityScore,
-      participants: speakingData.map((p) => ({
-        ...p,
-        totalTimeFormatted: this._formatMs(p.totalTime),
-        longestMonologueFormatted: this._formatMs(p.longestMonologue),
-      })),
+      participants: speakingData.map((p) => {
+        const trackerData = room.get(p.socketId);
+        return {
+          ...p,
+          name: trackerData ? trackerData.name : 'Unknown',
+          totalTimeFormatted: this._formatMs(p.totalTime),
+          longestMonologueFormatted: this._formatMs(p.longestMonologue),
+        };
+      }),
     };
   }
 

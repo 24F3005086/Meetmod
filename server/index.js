@@ -11,9 +11,12 @@ const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
 const path = require('path');
+const mongoose = require('mongoose');
+
 const { RoomManager } = require('./roomManager');
 const { SpeakingTracker } = require('./speakingTracker');
 const { ModerationEngine } = require('./moderationEngine');
+const SessionReport = require('./models/SessionReport');
 
 // ─── App Setup ───────────────────────────────────────────
 const app = express();
@@ -25,6 +28,13 @@ const io = new Server(server, {
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '..', 'public')));
+
+// ─── Database Setup (MongoDB) ─────────────────────────────
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/meetmod';
+mongoose
+  .connect(MONGODB_URI)
+  .then(() => console.log('📁 Connected to MongoDB database successfully'))
+  .catch((err) => console.error('❌ MongoDB connection error:', err));
 
 // ─── Core Instances ──────────────────────────────────────
 const roomManager = new RoomManager();
@@ -104,6 +114,26 @@ app.get('/api/rooms/:roomId/report', (req, res) => {
   }
 });
 
+/**
+ * GET /api/reports/:roomId
+ * Get persistent meeting report from MongoDB database.
+ */
+app.get('/api/reports/:roomId', async (req, res) => {
+  try {
+    const { roomId } = req.params;
+    const report = await SessionReport.findOne({ roomId });
+    if (!report) {
+      return res
+        .status(404)
+        .json({ success: false, error: 'Report not found for this room' });
+    }
+    res.json({ success: true, report });
+  } catch (err) {
+    console.error('[API] Error fetching DB report:', err);
+    res.status(500).json({ success: false, error: 'Failed to fetch report from database' });
+  }
+});
+
 // ─── SPA Catch-all ───────────────────────────────────────
 // Only catch routes that don't have a file extension (SPA routes)
 app.use((req, res, next) => {
@@ -139,7 +169,7 @@ io.on('connection', (socket) => {
         socket.id,
         userName
       );
-      speakingTracker.addParticipant(roomId, socket.id);
+      speakingTracker.addParticipant(roomId, socket.id, userName);
 
       const isHost = roomManager.isHost(roomId, socket.id);
 
@@ -300,7 +330,7 @@ io.on('connection', (socket) => {
   });
 
   // ── Disconnect ─────────────────────────────────────────
-  socket.on('disconnect', () => {
+  socket.on('disconnect', async () => {
     try {
       const roomId = socketRooms.get(socket.id);
       if (!roomId) return;
@@ -333,7 +363,30 @@ io.on('connection', (socket) => {
 
       // Cleanup empty rooms
       if (remaining === 0) {
-        console.log(`[Socket] Room ${roomId} is empty, cleaning up`);
+        console.log(`[Socket] Room ${roomId} is empty, compiling and saving report...`);
+        try {
+          const roomInfo = roomManager.getRoomInfo(roomId);
+          const roomName = roomInfo ? roomInfo.name : `Room ${roomId}`;
+          const reportData = speakingTracker.getMeetingReport(roomId);
+
+          if (reportData && reportData.participants && reportData.participants.length > 0) {
+            const finalReport = new SessionReport({
+              roomId: reportData.roomId,
+              roomName: roomName,
+              totalMeetingTime: reportData.totalMeetingTime,
+              participantCount: reportData.participantCount,
+              equityScore: reportData.equityScore,
+              participants: reportData.participants
+            });
+            await finalReport.save();
+            console.log(`[Database] Session report for ${roomId} saved successfully!`);
+          } else {
+            console.log(`[Database] Room ${roomId} has no participant logs, skipping report save.`);
+          }
+        } catch (dbErr) {
+          console.error('[Database] Failed to save session report:', dbErr);
+        }
+
         roomManager.deleteRoom(roomId);
         speakingTracker.deleteRoom(roomId);
         moderationEngines.delete(roomId);

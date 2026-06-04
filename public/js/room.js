@@ -400,7 +400,7 @@
   document.getElementById('btn-leave').addEventListener('click', () => {
     if (confirm('Are you sure you want to leave the meeting?')) {
       cleanup();
-      window.location.href = '/';
+      window.location.href = `/report.html?roomId=${encodeURIComponent(roomId)}`;
     }
   });
 

@@ -7,7 +7,13 @@
     "start": "node server/index.js",
     "dev": "node --watch server/index.js"
   },
-  "keywords": ["meeting", "moderation", "analytics", "webrtc", "speaking-time"],
+  "keywords": [
+    "meeting",
+    "moderation",
+    "analytics",
+    "webrtc",
+    "speaking-time"
+  ],
   "author": "IIT Ropar",
   "license": "MIT",
   "type": "commonjs",
@@ -15,6 +21,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "mongoose": "^9.6.3",
     "socket.io": "^4.8.1",
     "uuid": "^11.1.0"
   }
