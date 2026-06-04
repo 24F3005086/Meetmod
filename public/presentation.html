@@ -451,6 +451,10 @@
 
     /* Print styles */
     @media print {
+      @page {
+        size: landscape;
+        margin: 0;
+      }
       body {
         background: #08080c !important;
         -webkit-print-color-adjust: exact;
