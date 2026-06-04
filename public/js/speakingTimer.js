@@ -25,7 +25,23 @@ class SpeakingTimer {
       currentStartMs: null,
       isSpeaking: false,
       speakCount: 0,
+      interruptionsGiven: 0,
+      interruptionsReceived: 0,
     });
+  }
+
+  /**
+   * Update interruption counters for a participant.
+   * @param {string} socketId
+   * @param {number} given
+   * @param {number} received
+   */
+  updateInterruptions(socketId, given, received) {
+    const data = this.participants.get(socketId);
+    if (data) {
+      data.interruptionsGiven = given;
+      data.interruptionsReceived = received;
+    }
   }
 
   /**
@@ -114,6 +130,8 @@ class SpeakingTimer {
         totalTime: effectiveTotal,
         speakCount: data.speakCount,
         isSpeaking: data.isSpeaking,
+        interruptionsGiven: data.interruptionsGiven || 0,
+        interruptionsReceived: data.interruptionsReceived || 0,
       });
     }
 

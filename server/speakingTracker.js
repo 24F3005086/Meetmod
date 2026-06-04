@@ -40,6 +40,8 @@ class SpeakingTracker {
       longestMonologue: 0,    // Longest continuous speech in ms
       speakCount: 0,          // Number of times they started speaking
       history: [],            // Array of { start, end } timestamps
+      interruptionsGiven: 0,
+      interruptionsReceived: 0,
     });
   }
 
@@ -70,14 +72,35 @@ class SpeakingTracker {
    */
   startSpeaking(roomId, socketId) {
     const room = this.rooms.get(roomId);
-    if (!room) return;
+    if (!room) return null;
 
     const data = room.get(socketId);
-    if (!data || data.isSpeaking) return;
+    if (!data || data.isSpeaking) return null;
+
+    let interruptionEvent = null;
+
+    // Check if someone else is currently speaking (speech overlap detection)
+    for (const [otherId, otherData] of room) {
+      if (otherId !== socketId && otherData.isSpeaking) {
+        data.interruptionsGiven = (data.interruptionsGiven || 0) + 1;
+        otherData.interruptionsReceived = (otherData.interruptionsReceived || 0) + 1;
+
+        interruptionEvent = {
+          interrupterId: socketId,
+          interrupterName: data.name,
+          interruptedId: otherId,
+          interruptedName: otherData.name,
+          timestamp: Date.now()
+        };
+        break;
+      }
+    }
 
     data.isSpeaking = true;
     data.currentStart = Date.now();
     data.speakCount++;
+
+    return interruptionEvent;
   }
 
   /**
@@ -148,6 +171,8 @@ class SpeakingTracker {
         longestMonologue: data.longestMonologue,
         speakCount: data.speakCount,
         isSpeaking: data.isSpeaking,
+        interruptionsGiven: data.interruptionsGiven || 0,
+        interruptionsReceived: data.interruptionsReceived || 0,
       });
     }
 
@@ -216,20 +241,13 @@ class SpeakingTracker {
       0
     );
 
-    // Calculate equity score (coefficient of variation based)
+    // Calculate Gini Coefficient
+    let giniIndex = 0;
     let equityScore = 100;
     if (speakingData.length > 1) {
-      const percentages = speakingData.map((p) => p.percentage);
-      const mean =
-        percentages.reduce((a, b) => a + b, 0) / percentages.length;
-      if (mean > 0) {
-        const variance =
-          percentages.reduce((sum, p) => sum + Math.pow(p - mean, 2), 0) /
-          percentages.length;
-        const stdDev = Math.sqrt(variance);
-        const cv = stdDev / mean; // Coefficient of variation
-        equityScore = Math.max(0, Math.round(100 - cv * 100));
-      }
+      const times = speakingData.map((p) => p.totalTime);
+      giniIndex = this._calculateGini(times);
+      equityScore = Math.max(0, Math.min(100, Math.round((1 - giniIndex) * 100)));
     }
 
     return {
@@ -237,6 +255,7 @@ class SpeakingTracker {
       totalMeetingTime,
       participantCount: speakingData.length,
       equityScore,
+      giniIndex,
       participants: speakingData.map((p) => {
         const trackerData = room.get(p.socketId);
         return {
@@ -244,9 +263,34 @@ class SpeakingTracker {
           name: trackerData ? trackerData.name : 'Unknown',
           totalTimeFormatted: this._formatMs(p.totalTime),
           longestMonologueFormatted: this._formatMs(p.longestMonologue),
+          interruptionsGiven: p.interruptionsGiven,
+          interruptionsReceived: p.interruptionsReceived,
         };
       }),
     };
+  }
+
+  /**
+   * Calculate Gini Coefficient for an array of values.
+   * @param {number[]} values
+   * @returns {number} gini index between 0 and 1
+   */
+  _calculateGini(values) {
+    const n = values.length;
+    if (n < 2) return 0;
+
+    let absoluteDifferenceSum = 0;
+    let sum = 0;
+
+    for (let i = 0; i < n; i++) {
+      sum += values[i];
+      for (let j = 0; j < n; j++) {
+        absoluteDifferenceSum += Math.abs(values[i] - values[j]);
+      }
+    }
+
+    if (sum === 0) return 0;
+    return absoluteDifferenceSum / (2 * n * sum);
   }
 
   /**

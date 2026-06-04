@@ -13,7 +13,9 @@ const ParticipantReportSchema = new mongoose.Schema({
   speakCount: { type: Number, default: 0 },
   percentage: { type: Number, default: 0 },
   totalTimeFormatted: { type: String, default: '0:00' },
-  longestMonologueFormatted: { type: String, default: '0:00' }
+  longestMonologueFormatted: { type: String, default: '0:00' },
+  interruptionsGiven: { type: Number, default: 0 },
+  interruptionsReceived: { type: Number, default: 0 }
 });
 
 const SessionReportSchema = new mongoose.Schema({
@@ -23,6 +25,7 @@ const SessionReportSchema = new mongoose.Schema({
   totalMeetingTime: { type: Number, default: 0 },   // in milliseconds
   participantCount: { type: Number, default: 0 },
   equityScore: { type: Number, default: 100 },
+  giniIndex: { type: Number, default: 0 },
   participants: [ParticipantReportSchema]
 });
 

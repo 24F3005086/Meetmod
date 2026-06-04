@@ -218,7 +218,11 @@ io.on('connection', (socket) => {
     const roomId = socketRooms.get(socket.id);
     if (!roomId) return;
 
-    speakingTracker.startSpeaking(roomId, socket.id);
+    const interruption = speakingTracker.startSpeaking(roomId, socket.id);
+    if (interruption) {
+      io.to(roomId).emit('interruption-occurred', interruption);
+    }
+
     socket.to(roomId).emit('peer-speaking-start', {
       socketId: socket.id,
     });
@@ -420,6 +424,7 @@ io.on('connection', (socket) => {
               totalMeetingTime: reportData.totalMeetingTime,
               participantCount: reportData.participantCount,
               equityScore: reportData.equityScore,
+              giniIndex: reportData.giniIndex || 0,
               participants: reportData.participants
             });
             await finalReport.save();

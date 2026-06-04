@@ -94,11 +94,12 @@
             <div class="equity-value">
               <span class="equity-number" id="equity-score">--</span>
               <span class="equity-label">Equity</span>
+              <span class="gini-label" style="font-size: 0.65rem; opacity: 0.6; margin-top: 2px;">Gini: <strong id="report-gini-index">0.00</strong></span>
             </div>
           </div>
           <div class="stat-info">
             <h3>Meeting Equity Score</h3>
-            <p>A score of 100 represents perfectly distributed speaking time among all participants.</p>
+            <p>Calculated using the standard <strong>Gini Coefficient</strong>. A score of 100 represents perfectly equal contribution, and 0 represents total conversational imbalance.</p>
           </div>
         </div>
 
@@ -155,6 +156,8 @@
                 <th style="text-align: right;">Total Speaking Time</th>
                 <th style="text-align: right;">Longest Monologue</th>
                 <th style="text-align: right;">Turns Taken</th>
+                <th style="text-align: right;">🗣️ Interrupts</th>
+                <th style="text-align: right;">📥 Interrupted</th>
                 <th style="text-align: right;">Contribution</th>
               </tr>
             </thead>

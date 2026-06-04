@@ -80,6 +80,11 @@ function renderReport(report) {
     fillRing.style.strokeDashoffset = offset;
   }
 
+  const giniEl = document.getElementById('report-gini-index');
+  if (giniEl) {
+    giniEl.textContent = (report.giniIndex ?? 0).toFixed(2);
+  }
+
   // Define color palette matching client theme
   const colors = [
     '#6c5ce7', // Purple
@@ -113,6 +118,8 @@ function renderReport(report) {
       <td style="text-align: right; font-family: monospace;">${p.totalTimeFormatted}</td>
       <td style="text-align: right; font-family: monospace;">${p.longestMonologueFormatted}</td>
       <td style="text-align: right;">${p.speakCount}</td>
+      <td style="text-align: right;">${p.interruptionsGiven ?? 0}</td>
+      <td style="text-align: right;">${p.interruptionsReceived ?? 0}</td>
       <td style="text-align: right; color: ${color};" class="table-percentage">${p.percentage.toFixed(1)}%</td>
     `;
     tbody.appendChild(row);

@@ -143,6 +143,10 @@ class Dashboard {
             </div>
             <div class="participant-stats">
               ${p.totalTimeFormatted} · ${p.speakCount} turn${p.speakCount !== 1 ? 's' : ''}
+              <br>
+              <span style="font-size: 10px; opacity: 0.8; display: inline-flex; align-items: center; gap: 2px; margin-top: 2px;">
+                🗣️ ${p.interruptionsGiven || 0} interrupts | 📥 ${p.interruptionsReceived || 0} interrupted
+              </span>
             </div>
           </div>
           <div class="participant-percentage" style="color: ${p.color};">
@@ -214,23 +218,21 @@ class Dashboard {
   calculateEquityScore(participants) {
     if (participants.length <= 1) return 100;
 
-    const percentages = participants.map((p) => p.percentage);
+    const times = participants.map((p) => p.totalTime || 0);
+    const sumTimes = times.reduce((a, b) => a + b, 0);
+    if (sumTimes === 0) return 100;
 
-    // Filter out participants who haven't spoken at all (just joined)
-    const active = percentages.filter((p) => p > 0);
-    if (active.length <= 1) return 100;
+    const n = times.length;
+    let absoluteDifferenceSum = 0;
 
-    const mean = active.reduce((a, b) => a + b, 0) / active.length;
-    if (mean === 0) return 100;
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < n; j++) {
+        absoluteDifferenceSum += Math.abs(times[i] - times[j]);
+      }
+    }
 
-    const variance =
-      active.reduce((sum, p) => sum + Math.pow(p - mean, 2), 0) /
-      active.length;
-    const stdDev = Math.sqrt(variance);
-    const cv = stdDev / mean; // Coefficient of variation
-
-    // Map CV to 0-100 score (CV of 0 = 100 score, CV of 1+ = 0 score)
-    return Math.max(0, Math.min(100, Math.round(100 - cv * 100)));
+    const gini = absoluteDifferenceSum / (2 * n * sumTimes);
+    return Math.max(0, Math.min(100, Math.round((1 - gini) * 100)));
   }
 
   /**

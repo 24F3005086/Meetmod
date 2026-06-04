@@ -220,6 +220,7 @@
       'success',
       3000
     );
+    addTimelineEvent(`You joined the room as <strong>${userName}</strong>${isHost ? ' (Host)' : ''}`, 'speaking');
   });
 
   socket.on('user-connected', async ({ socketId, userName: remoteName, peerId: remotePeerId }) => {
@@ -237,6 +238,7 @@
 
     updateParticipantCount();
     notifications.show(`${remoteName} joined the meeting`, 'info', 3000);
+    addTimelineEvent(`<strong>${remoteName}</strong> joined the room`, 'speaking');
   });
 
   socket.on('user-disconnected', ({ socketId }) => {
@@ -249,6 +251,7 @@
     if (analyzer) { analyzer.destroy(); remoteAnalyzers.delete(socketId); }
     updateParticipantCount();
     notifications.show(`${name} left the meeting`, 'warning', 3000);
+    addTimelineEvent(`<strong>${name}</strong> left the room`, 'muted');
   });
 
   socket.on('peer-speaking-start', ({ socketId }) => {
@@ -276,7 +279,13 @@
   });
 
   socket.on('speaking-data-update', ({ participants }) => {
-    if (dashboard) dashboard.updateFromServer(participants);
+    if (speakingTimer && participants) {
+      participants.forEach((p) => {
+        const id = p.socketId === socket.id ? 'local' : p.socketId;
+        speakingTimer.updateInterruptions(id, p.interruptionsGiven, p.interruptionsReceived);
+      });
+    }
+    if (dashboard) dashboard.update();
   });
 
   socket.on('host-changed', ({ hostSocketId }) => {
@@ -292,6 +301,10 @@
   socket.on('admin-kicked', () => {
     alert('You have been removed from the room by the host.');
     window.location.href = '/';
+  });
+
+  socket.on('interruption-occurred', ({ interrupterName, interruptedName }) => {
+    addTimelineEvent(`<strong>${interrupterName}</strong> interrupted <strong>${interruptedName}</strong>`, 'warning');
   });
 
   socket.on('moderation-settings-updated', ({ config }) => {
@@ -565,6 +578,28 @@
   function removeVideoTile(socketId) {
     const tile = document.getElementById(`tile-${socketId}`);
     if (tile) { tile.remove(); updateGridLayout(); }
+  }
+
+  function addTimelineEvent(text, dotClass = 'speaking') {
+    const list = document.getElementById('timeline-list');
+    if (!list) return;
+
+    const empty = list.querySelector('.empty-state');
+    if (empty) empty.remove();
+
+    const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+    const item = document.createElement('div');
+    item.className = 'timeline-item';
+    item.innerHTML = `
+      <div class="timeline-dot ${dotClass}"></div>
+      <div class="timeline-body">
+        <p class="timeline-text">${text}</p>
+        <span class="timeline-time">${time}</span>
+      </div>
+    `;
+
+    list.insertBefore(item, list.firstChild);
   }
 
   function updateGridLayout() {
