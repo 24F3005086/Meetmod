@@ -158,6 +158,93 @@ class NotificationManager {
   }
 
   /**
+   * Show a persistent join request toast with Admit/Decline buttons.
+   * @param {string} userName
+   * @param {string} socketId - identify this specific request toast
+   * @param {Function} onRespond - callback(approved: boolean)
+   */
+  showJoinRequest(userName, socketId, onRespond) {
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification join-request';
+    toast.id = `join-request-${socketId}`;
+    toast.style.cssText = `
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 16px;
+      background: rgba(108, 92, 231, 0.15);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(108, 92, 231, 0.4);
+      border-radius: 12px;
+      color: #ffffff;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      line-height: 1.5;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      pointer-events: auto;
+      transform: translateX(120%);
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    `;
+
+    toast.innerHTML = `
+      <i data-lucide="user-check" style="width: 18px; height: 18px; color: #6c5ce7; flex-shrink: 0; margin-top: 1px;"></i>
+      <div style="flex: 1;">
+        <div style="color: #6c5ce7; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">
+          Admission Request
+        </div>
+        <div style="color: rgba(255, 255, 255, 0.9); margin-bottom: 8px;"><strong>${userName}</strong> wants to join this room.</div>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn-admit" style="background: #55efc4; border: none; color: #0a0a0f; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 11px; transition: 0.2s;">Admit</button>
+          <button class="btn-decline" style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); color: #fff; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 11px; transition: 0.2s;">Decline</button>
+        </div>
+      </div>
+    `;
+
+    // Button event listeners
+    toast.querySelector('.btn-admit').addEventListener('click', (e) => {
+      e.stopPropagation();
+      onRespond(true);
+      this._removeToast(toast);
+    });
+
+    toast.querySelector('.btn-decline').addEventListener('click', (e) => {
+      e.stopPropagation();
+      onRespond(false);
+      this._removeToast(toast);
+    });
+
+    this.container.appendChild(toast);
+    this._toastCount++;
+
+    if (window.lucide) {
+      window.lucide.createIcons({ nodes: [toast] });
+    }
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        toast.style.transform = 'translateX(0)';
+        toast.style.opacity = '1';
+      });
+    });
+
+    this.playSound('info');
+    return toast;
+  }
+
+  /**
+   * Remove a specific join request notification by socketId.
+   * @param {string} socketId
+   */
+  removeJoinRequest(socketId) {
+    const toast = document.getElementById(`join-request-${socketId}`);
+    if (toast) {
+      this._removeToast(toast);
+    }
+  }
+
+  /**
    * Show a speaking-time warning notification.
    * @param {string} message
    */

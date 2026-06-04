@@ -66,7 +66,8 @@
       if (data.room && data.room.name) {
         document.getElementById('room-name').textContent = data.room.name;
       }
-      initMedia();
+      // Emit join-room immediately to check lobby entry permissions
+      socket.emit('join-room', { roomId, userName, peerId: null });
     })
     .catch((err) => {
       console.error('[Room] Room verification failed:', err);
@@ -159,13 +160,12 @@
     // Add self to speaking timer
     speakingTimer.addParticipant('local', userName);
 
-    // Join room via Socket.io
+    // Register peer ID once PeerJS is ready
     try {
       const peerId = await webrtc.getPeerId();
-      socket.emit('join-room', { roomId, userName, peerId });
+      socket.emit('register-peer', { peerId });
     } catch (e) {
-      console.warn('[Room] PeerJS ID not ready, joining without peerId');
-      socket.emit('join-room', { roomId, userName, peerId: null });
+      console.warn('[Room] PeerJS ID not ready, failed to register peer');
     }
 
     // Init charts
@@ -305,6 +305,72 @@
 
   socket.on('interruption-occurred', ({ interrupterName, interruptedName }) => {
     addTimelineEvent(`<strong>${interrupterName}</strong> interrupted <strong>${interruptedName}</strong>`, 'warning');
+  });
+
+  socket.on('waiting-in-lobby', () => {
+    showLobbyOverlay('Waiting for the host to let you in...');
+  });
+
+  socket.on('join-approved', ({ roomId: approvedRoomId, roomState }) => {
+    hideLobbyOverlay();
+
+    isHost = roomState.isHost;
+    if (isHost) {
+      document.body.classList.add('is-host');
+    } else {
+      document.body.classList.remove('is-host');
+    }
+
+    if (roomState.participants) {
+      const participants = Array.isArray(roomState.participants)
+        ? roomState.participants
+        : Object.values(roomState.participants);
+
+      document.getElementById('participant-count').textContent = participants.length;
+
+      participants.forEach((p) => {
+        if (p.id !== socket.id) {
+          participantNames.set(p.id, p.name);
+          speakingTimer.addParticipant(p.id, p.name);
+        }
+      });
+    }
+
+    if (roomState.moderationConfig) applyModerationConfig(roomState.moderationConfig);
+
+    notifications.show(
+      `Joined as ${userName}`,
+      'success',
+      3000
+    );
+    addTimelineEvent(`You joined the room as <strong>${userName}</strong>`, 'speaking');
+
+    if (!localStream) {
+      initMedia();
+    }
+  });
+
+  socket.on('join-declined', () => {
+    const statusText = document.getElementById('lobby-status-text');
+    if (statusText) {
+      statusText.textContent = 'The host declined your request to join.';
+      statusText.style.color = '#ff7675';
+    }
+    const spinner = document.querySelector('#lobby-waiting-overlay .spinner');
+    if (spinner) spinner.style.display = 'none';
+
+    notifications.show('Entry request declined by host', 'danger', 5000);
+    socket.disconnect();
+  });
+
+  socket.on('join-request', ({ socketId, userName: requesterName }) => {
+    notifications.showJoinRequest(requesterName, socketId, (approved) => {
+      socket.emit('approve-join', { targetSocketId: socketId, approved });
+    });
+  });
+
+  socket.on('join-request-cancelled', ({ socketId }) => {
+    notifications.removeJoinRequest(socketId);
   });
 
   socket.on('moderation-settings-updated', ({ config }) => {
@@ -600,6 +666,59 @@
     `;
 
     list.insertBefore(item, list.firstChild);
+  }
+
+  let lobbyOverlay = null;
+
+  function showLobbyOverlay(statusText) {
+    if (lobbyOverlay) return;
+
+    lobbyOverlay = document.createElement('div');
+    lobbyOverlay.id = 'lobby-waiting-overlay';
+    lobbyOverlay.style.cssText = `
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 10, 15, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100000;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+    `;
+
+    lobbyOverlay.innerHTML = `
+      <div style="text-align: center; max-width: 420px; padding: 32px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; box-shadow: var(--shadow-lg);">
+        <div style="margin-bottom: 24px; position: relative; width: 64px; height: 64px; margin-left: auto; margin-right: auto;">
+          <div class="spinner" style="width: 64px; height: 64px; border-width: 4px; border-color: rgba(108, 92, 231, 0.1); border-top-color: #6c5ce7;"></div>
+        </div>
+        <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 12px; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Waiting Room</h2>
+        <p id="lobby-status-text" style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; margin-bottom: 24px;">${statusText}</p>
+        <button id="btn-leave-lobby" class="btn btn-secondary" style="margin-left: auto; margin-right: auto;">Leave Meeting</button>
+      </div>
+    `;
+
+    document.body.appendChild(lobbyOverlay);
+
+    document.getElementById('btn-leave-lobby').addEventListener('click', () => {
+      window.location.href = '/';
+    });
+  }
+
+  function hideLobbyOverlay() {
+    if (lobbyOverlay) {
+      lobbyOverlay.style.opacity = '0';
+      lobbyOverlay.style.transition = 'opacity 0.3s ease';
+      setTimeout(() => {
+        if (lobbyOverlay && lobbyOverlay.parentElement) {
+          lobbyOverlay.parentElement.removeChild(lobbyOverlay);
+        }
+        lobbyOverlay = null;
+      }, 300);
+    }
   }
 
   function updateGridLayout() {

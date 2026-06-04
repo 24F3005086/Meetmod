@@ -24,6 +24,7 @@ class RoomManager {
       createdAt: Date.now(),
       hostSocketId: null,
       participants: new Map(),
+      waitingQueue: new Map(),
     };
     this.rooms.set(roomId, room);
     console.log(`[RoomManager] Room created: ${roomId} — "${room.name}"`);
@@ -148,6 +149,57 @@ class RoomManager {
     if (!participant) return;
 
     Object.assign(participant, updates);
+  }
+
+  /**
+   * Add a participant to the waiting queue (lobby).
+   * @param {string} roomId
+   * @param {string} socketId
+   * @param {string} name
+   * @returns {object} knocking participant data
+   */
+  addToLobby(roomId, socketId, name) {
+    const room = this.rooms.get(roomId);
+    if (!room) return null;
+
+    const participant = {
+      id: socketId,
+      name: name || 'Guest',
+      joinedAt: Date.now(),
+    };
+
+    room.waitingQueue.set(socketId, participant);
+    console.log(`[RoomManager] ${name} added to lobby in room ${roomId}`);
+    return participant;
+  }
+
+  /**
+   * Remove a participant from the lobby.
+   * @param {string} roomId
+   * @param {string} socketId
+   * @returns {object|null} removed participant data
+   */
+  removeFromLobby(roomId, socketId) {
+    const room = this.rooms.get(roomId);
+    if (!room) return null;
+
+    const participant = room.waitingQueue.get(socketId);
+    if (participant) {
+      room.waitingQueue.delete(socketId);
+      console.log(`[RoomManager] ${participant.name} removed from lobby in room ${roomId}`);
+    }
+    return participant;
+  }
+
+  /**
+   * Get all knocking participants in the lobby.
+   * @param {string} roomId
+   * @returns {object[]}
+   */
+  getLobby(roomId) {
+    const room = this.rooms.get(roomId);
+    if (!room) return [];
+    return Array.from(room.waitingQueue.values());
   }
 
   /**

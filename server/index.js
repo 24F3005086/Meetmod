@@ -159,41 +159,61 @@ io.on('connection', (socket) => {
         return;
       }
 
-      // Join socket.io room
-      socket.join(roomId);
-      socketRooms.set(socket.id, roomId);
-
-      // Add participant
-      const participant = roomManager.addParticipant(
-        roomId,
-        socket.id,
-        userName
-      );
-      speakingTracker.addParticipant(roomId, socket.id, userName);
-
-      const isHost = roomManager.isHost(roomId, socket.id);
-
-      // Send room state to the joiner
       const roomInfo = roomManager.getRoomInfo(roomId);
-      const modEngine = moderationEngines.get(roomId);
-      socket.emit('room-state', {
-        participants: roomInfo.participants,
-        hostSocketId: roomInfo.hostSocketId,
-        isHost,
-        moderationConfig: modEngine ? modEngine.getConfig() : null,
-      });
+      const hostExists = roomInfo && roomInfo.hostSocketId && roomManager.getParticipants(roomId).some(p => p.id === roomInfo.hostSocketId);
 
-      // Broadcast to others in room
-      socket.to(roomId).emit('user-connected', {
-        socketId: socket.id,
-        userName,
-        peerId,
-        isHost,
-      });
+      if (hostExists) {
+        // Host exists -> Put in waiting room (lobby)
+        roomManager.addToLobby(roomId, socket.id, userName);
+        socketRooms.set(socket.id, roomId);
 
-      console.log(
-        `[Socket] ${userName} joined room ${roomId} (host: ${isHost})`
-      );
+        socket.emit('waiting-in-lobby', { roomId, userName });
+
+        // Notify Host
+        const hostSocket = io.sockets.sockets.get(roomInfo.hostSocketId);
+        if (hostSocket) {
+          hostSocket.emit('join-request', {
+            socketId: socket.id,
+            userName,
+          });
+        }
+        console.log(`[Socket] ${userName} waiting in lobby for room ${roomId}`);
+      } else {
+        // No host -> Join immediately (this user becomes host)
+        socket.join(roomId);
+        socketRooms.set(socket.id, roomId);
+
+        const participant = roomManager.addParticipant(
+          roomId,
+          socket.id,
+          userName
+        );
+        speakingTracker.addParticipant(roomId, socket.id, userName);
+
+        const isHost = roomManager.isHost(roomId, socket.id);
+
+        // Send room state to the joiner
+        const updatedRoomInfo = roomManager.getRoomInfo(roomId);
+        const modEngine = moderationEngines.get(roomId);
+        socket.emit('room-state', {
+          participants: updatedRoomInfo.participants,
+          hostSocketId: updatedRoomInfo.hostSocketId,
+          isHost,
+          moderationConfig: modEngine ? modEngine.getConfig() : null,
+        });
+
+        // Broadcast to others in room
+        socket.to(roomId).emit('user-connected', {
+          socketId: socket.id,
+          userName,
+          peerId,
+          isHost,
+        });
+
+        console.log(
+          `[Socket] ${userName} joined room ${roomId} (host: ${isHost})`
+        );
+      }
     } catch (err) {
       console.error('[Socket] Error joining room:', err);
       socket.emit('error', { message: 'Failed to join room' });
@@ -377,6 +397,72 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on('approve-join', ({ targetSocketId, approved }) => {
+    const roomId = socketRooms.get(socket.id);
+    if (!roomId) return;
+
+    if (!roomManager.isHost(roomId, socket.id)) {
+      socket.emit('error', { message: 'Only the host can admit participants.' });
+      return;
+    }
+
+    const p = roomManager.removeFromLobby(roomId, targetSocketId);
+    if (!p) return; // Not in lobby
+
+    const targetSocket = io.sockets.sockets.get(targetSocketId);
+    if (!targetSocket) return;
+
+    if (approved) {
+      targetSocket.join(roomId);
+
+      const participant = roomManager.addParticipant(roomId, targetSocketId, p.name);
+      speakingTracker.addParticipant(roomId, targetSocketId, p.name);
+
+      const roomInfo = roomManager.getRoomInfo(roomId);
+      const modEngine = moderationEngines.get(roomId);
+      targetSocket.emit('join-approved', {
+        roomId,
+        roomState: {
+          participants: roomInfo.participants,
+          hostSocketId: roomInfo.hostSocketId,
+          isHost: false,
+          moderationConfig: modEngine ? modEngine.getConfig() : null,
+        }
+      });
+
+      console.log(`[Socket] Host approved join for ${p.name} (${targetSocketId})`);
+    } else {
+      targetSocket.emit('join-declined');
+      targetSocket.disconnect();
+      console.log(`[Socket] Host declined join for ${p.name} (${targetSocketId})`);
+    }
+  });
+
+  socket.on('register-peer', ({ peerId }) => {
+    const roomId = socketRooms.get(socket.id);
+    if (!roomId) return;
+
+    const roomInfo = roomManager.getRoomInfo(roomId);
+    if (roomInfo && roomInfo.participants) {
+      const p = roomInfo.participants.find(part => part.id === socket.id);
+      if (p) {
+        p.peerId = peerId;
+      }
+    }
+
+    const participant = roomInfo ? roomInfo.participants.find(part => part.id === socket.id) : null;
+    const name = participant ? participant.name : 'Guest';
+
+    // Broadcast user-connected with their actual peerId once media is initialized
+    socket.to(roomId).emit('user-connected', {
+      socketId: socket.id,
+      userName: name,
+      peerId: peerId,
+      isHost: roomManager.isHost(roomId, socket.id),
+    });
+    console.log(`[Socket] Registered peer ${peerId} for ${name} (${socket.id})`);
+  });
+
   // ── Disconnect ─────────────────────────────────────────
   socket.on('disconnect', async () => {
     try {
@@ -391,6 +477,22 @@ io.on('connection', (socket) => {
       const modEngine = moderationEngines.get(roomId);
       if (modEngine) {
         modEngine.removeUser(socket.id);
+      }
+
+      // Check if they were in the lobby waiting list
+      const wasInLobby = roomManager.removeFromLobby(roomId, socket.id);
+      if (wasInLobby) {
+        // Notify host that the join request is cancelled
+        const roomInfo = roomManager.getRoomInfo(roomId);
+        if (roomInfo && roomInfo.hostSocketId) {
+          const hostSocket = io.sockets.sockets.get(roomInfo.hostSocketId);
+          if (hostSocket) {
+            hostSocket.emit('join-request-cancelled', { socketId: socket.id });
+          }
+        }
+        socketRooms.delete(socket.id);
+        console.log(`[Socket] Knocking user ${wasInLobby.name} disconnected from lobby`);
+        return;
       }
 
       // Remove from room
