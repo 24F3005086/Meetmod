@@ -1,0 +1,21 @@
+{
+  "name": "meetmod",
+  "version": "1.0.0",
+  "description": "MeetMod — AI-Powered Meeting Moderation & Analytics Platform",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js"
+  },
+  "keywords": ["meeting", "moderation", "analytics", "webrtc", "speaking-time"],
+  "author": "IIT Ropar",
+  "license": "MIT",
+  "type": "commonjs",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "socket.io": "^4.8.1",
+    "uuid": "^11.1.0"
+  }
+}

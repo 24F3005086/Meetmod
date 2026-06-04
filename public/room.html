@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="MeetMod Meeting Room — Real-time AI-powered meeting moderation with analytics.">
+  <meta name="theme-color" content="#0a0a0f">
+  <title>MeetMod — Meeting Room</title>
+  
+  <!-- Global Error Logger (Displays errors on screen for easy debugging) -->
+  <script>
+    window.onerror = function(message, source, lineno, colno, error) {
+      const div = document.createElement('div');
+      div.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#ff7675;color:white;padding:16px;z-index:99999;font-family:monospace;text-align:left;font-size:12px;box-shadow:0 4px 12px rgba(0,0,0,0.5);line-height:1.4;';
+      div.innerHTML = '<strong>MeetMod Client Error:</strong> ' + message + ' <br><small style="opacity:0.8;">at ' + source + ':' + lineno + ':' + colno + '</small><br><button style="margin-top:8px;background:white;color:#ff7675;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-weight:bold;" onclick="this.parentElement.remove()">Dismiss</button>';
+      document.body.appendChild(div);
+      return false;
+    };
+  </script>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%236c5ce7'/><stop offset='100%25' stop-color='%2300cec9'/></linearGradient></defs><rect width='100' height='100' rx='20' fill='url(%23g)'/><text y='70' x='50' text-anchor='middle' fill='white' font-size='55' font-family='Arial' font-weight='bold'>M</text></svg>">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/room.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+
+  <div class="room-page">
+
+    <!-- ====== Top Bar ====== -->
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <div class="top-bar-logo">
+          <div class="top-bar-logo-icon">
+            <i data-lucide="audio-waveform" style="width:18px;height:18px;color:#fff"></i>
+          </div>
+          <span class="top-bar-logo-text">MeetMod</span>
+        </div>
+        <div class="top-bar-divider"></div>
+        <div class="room-info">
+          <span class="room-name" id="room-name">Meeting Room</span>
+          <button class="room-code-badge" id="room-code-badge" data-tooltip="Click to copy">
+            <i data-lucide="hash" class="copy-icon" style="width:12px;height:12px"></i>
+            <span id="room-code-display">------</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="top-bar-center">
+        <div class="meeting-timer">
+          <span class="timer-dot"></span>
+          <span id="meeting-timer">00:00:00</span>
+        </div>
+      </div>
+
+      <div class="top-bar-right">
+        <div class="participant-count">
+          <i data-lucide="users" style="width:16px;height:16px"></i>
+          <span class="participant-count-num" id="participant-count">1</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ====== Main Content ====== -->
+    <div class="main-content">
+
+      <!-- Video Area -->
+      <div class="video-area">
+        <div class="video-grid" id="video-grid" data-count="1">
+          <!-- Video tiles are dynamically added by JS -->
+        </div>
+      </div>
+
+      <!-- Analytics Dashboard (Sidebar) -->
+      <aside class="dashboard-panel" id="dashboard-panel">
+        <div class="dashboard-header">
+          <div class="dashboard-title">
+            <i data-lucide="bar-chart-3" style="width:18px;height:18px"></i>
+            Analytics
+          </div>
+          <button class="dashboard-close" id="dashboard-close" data-tooltip="Close">
+            <i data-lucide="x" style="width:16px;height:16px"></i>
+          </button>
+        </div>
+
+        <!-- Tabs -->
+        <div class="dashboard-tabs">
+          <div class="dashboard-tab active" data-tab="live">Live</div>
+          <div class="dashboard-tab" data-tab="timeline">Timeline</div>
+          <div class="dashboard-tab" data-tab="settings">Settings</div>
+        </div>
+
+        <!-- Scrollable Content -->
+        <div class="dashboard-content">
+
+          <!-- === Live Tab === -->
+          <div class="tab-content active" id="tab-live">
+
+            <!-- Equity Score -->
+            <div class="equity-section">
+              <div class="equity-ring">
+                <svg viewBox="0 0 108 108">
+                  <defs>
+                    <linearGradient id="equityGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#6c5ce7"/>
+                      <stop offset="100%" stop-color="#00cec9"/>
+                    </linearGradient>
+                  </defs>
+                  <circle class="equity-ring-bg" cx="54" cy="54" r="50"/>
+                  <circle class="equity-ring-fill" id="equity-ring-fill" cx="54" cy="54" r="50"/>
+                </svg>
+                <div class="equity-value">
+                  <span class="equity-number" id="equity-score">--</span>
+                  <span class="equity-label">Equity</span>
+                </div>
+              </div>
+              <p class="equity-description">How evenly speaking time is distributed</p>
+            </div>
+
+            <!-- Participants -->
+            <div class="participants-section">
+              <div class="section-title">
+                Participants
+                <span class="count" id="dash-participant-count">0</span>
+              </div>
+              <div id="participant-list">
+                <!-- Participant cards dynamically added -->
+                <div class="empty-state">
+                  <div class="empty-state-icon">👥</div>
+                  <p class="empty-state-text">Waiting for participants...</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quiet Alerts -->
+            <div class="quiet-alerts" id="quiet-alerts" style="display:none;">
+              <div class="section-title">
+                <span>⚠️ Quiet Participants</span>
+              </div>
+              <div id="quiet-alerts-list">
+                <!-- Quiet alert cards dynamically added -->
+              </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="chart-section">
+              <div class="chart-container">
+                <div class="chart-title">
+                  <i data-lucide="pie-chart" style="width:14px;height:14px"></i>
+                  Speaking Distribution
+                </div>
+                <div class="chart-wrapper">
+                  <canvas id="chart-distribution"></canvas>
+                </div>
+              </div>
+              <div class="chart-container">
+                <div class="chart-title">
+                  <i data-lucide="trending-up" style="width:14px;height:14px"></i>
+                  Speaking Timeline
+                </div>
+                <div class="chart-wrapper">
+                  <canvas id="chart-timeline"></canvas>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- === Timeline Tab === -->
+          <div class="tab-content" id="tab-timeline">
+            <div class="timeline-list" id="timeline-list">
+              <div class="empty-state">
+                <div class="empty-state-icon">📋</div>
+                <p class="empty-state-text">Events will appear here as the meeting progresses</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- === Settings Tab === -->
+          <div class="tab-content" id="tab-settings">
+            <div class="settings-section">
+              <div class="settings-section-title">Moderation Rules</div>
+
+              <div class="setting-item">
+                <div class="setting-item-info">
+                  <div class="setting-item-label">Auto-Moderation</div>
+                  <div class="setting-item-desc">Automatically manage dominant speakers</div>
+                </div>
+                <div class="setting-item-control">
+                  <label class="toggle">
+                    <input type="checkbox" id="setting-auto-mod" checked>
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-item-info">
+                  <div class="setting-item-label">Speaking Threshold</div>
+                  <div class="setting-item-desc">Max continuous speaking time (seconds)</div>
+                </div>
+                <div class="setting-item-control">
+                  <input type="number" class="setting-number-input" id="setting-threshold" value="120" min="30" max="600" step="10">
+                </div>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-item-info">
+                  <div class="setting-item-label">Quiet Nudging</div>
+                  <div class="setting-item-desc">Notify participants who haven't spoken</div>
+                </div>
+                <div class="setting-item-control">
+                  <label class="toggle">
+                    <input type="checkbox" id="setting-nudge" checked>
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-item-info">
+                  <div class="setting-item-label">Quiet Threshold</div>
+                  <div class="setting-item-desc">Time before nudging quiet participants (seconds)</div>
+                </div>
+                <div class="setting-item-control">
+                  <input type="number" class="setting-number-input" id="setting-quiet-threshold" value="180" min="60" max="900" step="30">
+                </div>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-item-info">
+                  <div class="setting-item-label">Countdown Warning</div>
+                  <div class="setting-item-desc">Show countdown before auto-muting</div>
+                </div>
+                <div class="setting-item-control">
+                  <label class="toggle">
+                    <input type="checkbox" id="setting-countdown" checked>
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-section">
+              <div class="settings-section-title">Display</div>
+
+              <div class="setting-item">
+                <div class="setting-item-info">
+                  <div class="setting-item-label">Show Speaking Time</div>
+                  <div class="setting-item-desc">Display time badges on video tiles</div>
+                </div>
+                <div class="setting-item-control">
+                  <label class="toggle">
+                    <input type="checkbox" id="setting-show-time" checked>
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-item-info">
+                  <div class="setting-item-label">Sound Effects</div>
+                  <div class="setting-item-desc">Play sounds for notifications</div>
+                </div>
+                <div class="setting-item-control">
+                  <label class="toggle">
+                    <input type="checkbox" id="setting-sounds" checked>
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </aside>
+
+      <!-- Dashboard Backdrop (mobile) -->
+      <div class="dashboard-backdrop" id="dashboard-backdrop"></div>
+
+      <!-- Chat Panel (Sidebar) -->
+      <aside class="chat-panel" id="chat-panel">
+        <div class="chat-header">
+          <div class="chat-title">
+            <i data-lucide="message-square" style="width:18px;height:18px"></i>
+            Chat
+          </div>
+          <button class="chat-close" id="chat-close" data-tooltip="Close">
+            <i data-lucide="x" style="width:16px;height:16px"></i>
+          </button>
+        </div>
+        <div class="chat-messages" id="chat-messages">
+          <div class="empty-state">
+            <div class="empty-state-icon">💬</div>
+            <p class="empty-state-text">No messages yet. Send a message to start the chat!</p>
+          </div>
+        </div>
+        <div class="chat-footer">
+          <form class="chat-input-form" id="chat-form" onsubmit="event.preventDefault();">
+            <input type="text" class="chat-input" id="chat-input" placeholder="Type a message..." autocomplete="off" maxlength="500">
+            <button type="submit" class="chat-send-btn" id="chat-send-btn">
+              <i data-lucide="send" style="width:16px;height:16px"></i>
+            </button>
+          </form>
+        </div>
+      </aside>
+
+    </div>
+
+    <!-- ====== Control Bar ====== -->
+    <div class="control-bar">
+      <button class="control-btn" id="btn-mic" data-tooltip="Toggle Microphone">
+        <i data-lucide="mic" style="width:20px;height:20px"></i>
+      </button>
+      <button class="control-btn" id="btn-camera" data-tooltip="Toggle Camera">
+        <i data-lucide="video" style="width:20px;height:20px"></i>
+      </button>
+      <button class="control-btn" id="btn-screen" data-tooltip="Share Screen">
+        <i data-lucide="monitor-up" style="width:20px;height:20px"></i>
+      </button>
+
+      <div class="control-divider"></div>
+
+      <button class="control-btn" id="btn-analytics" data-tooltip="Analytics">
+        <i data-lucide="bar-chart-3" style="width:20px;height:20px"></i>
+      </button>
+      <button class="control-btn" id="btn-chat" data-tooltip="Chat">
+        <i data-lucide="message-square" style="width:20px;height:20px"></i>
+        <span class="chat-badge" id="chat-badge"></span>
+      </button>
+      <button class="control-btn" id="btn-settings" data-tooltip="Settings">
+        <i data-lucide="settings" style="width:20px;height:20px"></i>
+      </button>
+
+      <div class="control-divider"></div>
+
+      <button class="control-btn btn-leave" id="btn-leave" data-tooltip="Leave Meeting">
+        <i data-lucide="phone-off" style="width:20px;height:20px"></i>
+        <span>Leave</span>
+      </button>
+    </div>
+
+  </div>
+
+  <!-- ====== Countdown Overlay ====== -->
+  <div class="countdown-overlay" id="countdown-overlay">
+    <div class="countdown-number" id="countdown-number">5</div>
+    <div class="countdown-label" id="countdown-label">Auto-mute in</div>
+  </div>
+
+  <!-- ====== Moderation Settings Modal ====== -->
+  <div class="modal-overlay settings-modal" id="settings-modal">
+    <div class="modal">
+      <div class="settings-header">
+        <h2>
+          <i data-lucide="sliders-horizontal" style="width:20px;height:20px;color:var(--accent-primary)"></i>
+          Moderation Settings
+        </h2>
+        <button class="settings-close" id="modal-settings-close">
+          <i data-lucide="x" style="width:18px;height:18px"></i>
+        </button>
+      </div>
+
+      <div class="setting-group">
+        <label>Max Speaking Time (seconds)</label>
+        <input type="number" class="setting-input" id="modal-threshold" value="120" min="30" max="600" step="10">
+        <p class="desc">After this duration of continuous speaking, auto-moderation will trigger.</p>
+      </div>
+
+      <div class="setting-group">
+        <label>Quiet Participant Threshold (seconds)</label>
+        <input type="number" class="setting-input" id="modal-quiet-threshold" value="180" min="60" max="900" step="30">
+        <p class="desc">Participants who haven't spoken for this long will receive a gentle nudge.</p>
+      </div>
+
+      <div class="setting-group">
+        <div class="setting-row">
+          <div>
+            <div class="setting-row-label">Enable Auto-Mute</div>
+            <div class="setting-row-desc">Automatically mute dominant speakers</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="modal-auto-mute" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="setting-row">
+          <div>
+            <div class="setting-row-label">Enable Quiet Nudging</div>
+            <div class="setting-row-desc">Send nudges to silent participants</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="modal-nudge" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="settings-footer">
+        <button class="btn btn-secondary" id="modal-settings-cancel">Cancel</button>
+        <button class="btn btn-primary" id="modal-settings-save">Save Settings</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== Toast Container ====== -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- ====== External Libraries (Served Locally) ====== -->
+  <!-- Socket.io Client (Automatically served by socket.io backend) -->
+  <script src="/socket.io/socket.io.js"></script>
+  <!-- PeerJS -->
+  <script src="js/vendor/peerjs.min.js"></script>
+  <!-- hark.js (speech detection) -->
+  <script src="js/vendor/hark.bundle.js"></script>
+  <!-- Chart.js -->
+  <script src="js/vendor/chart.umd.min.js"></script>
+  <!-- Lucide Icons -->
+  <script src="js/vendor/lucide.min.js"></script>
+
+  <!-- ====== App Modules ====== -->
+  <script src="js/notifications.js"></script>
+  <script src="js/audioAnalyzer.js"></script>
+  <script src="js/speakingTimer.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/moderator.js"></script>
+  <script src="js/webrtc.js"></script>
+  <script src="js/room.js"></script>
+
+</body>
+</html>

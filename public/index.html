@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="MeetMod — AI-Powered Meeting Moderation. Equal voice for everyone with real-time analytics, smart moderation, and quiet nudging.">
+  <meta name="theme-color" content="#0a0a0f">
+  <meta name="author" content="MeetMod">
+  <title>MeetMod — AI-Powered Meeting Moderation</title>
+
+  <!-- Global Error Logger (Displays errors on screen for easy debugging) -->
+  <script>
+    window.onerror = function(message, source, lineno, colno, error) {
+      const div = document.createElement('div');
+      div.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#ff7675;color:white;padding:16px;z-index:99999;font-family:monospace;text-align:left;font-size:12px;box-shadow:0 4px 12px rgba(0,0,0,0.5);line-height:1.4;';
+      div.innerHTML = '<strong>MeetMod Client Error:</strong> ' + message + ' <br><small style="opacity:0.8;">at ' + source + ':' + lineno + ':' + colno + '</small><br><button style="margin-top:8px;background:white;color:#ff7675;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-weight:bold;" onclick="this.parentElement.remove()">Dismiss</button>';
+      document.body.appendChild(div);
+      return false;
+    };
+  </script>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%236c5ce7'/><stop offset='100%25' stop-color='%2300cec9'/></linearGradient></defs><rect width='100' height='100' rx='20' fill='url(%23g)'/><text y='70' x='50' text-anchor='middle' fill='white' font-size='55' font-family='Arial' font-weight='bold'>M</text></svg>">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/landing.css">
+</head>
+<body>
+
+  <!-- Animated Background -->
+  <div class="landing-bg"></div>
+
+  <!-- Floating Orbs -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="orb orb-4"></div>
+
+  <div class="landing-page">
+
+    <!-- ====== Header ====== -->
+    <header class="landing-header">
+      <div class="logo">
+        <div class="logo-icon">
+          <i data-lucide="audio-waveform" style="width:22px;height:22px;color:#fff"></i>
+        </div>
+        <div>
+          <div class="logo-text">MeetMod</div>
+          <div class="logo-tagline">AI-Powered Meeting Moderation</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ====== Hero ====== -->
+    <main class="hero">
+
+      <!-- Hero Content -->
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span class="hero-badge-dot"></span>
+          Powered by AI & WebRTC
+        </div>
+        <h1>
+          Equal <span class="gradient-word">Voice</span><br>
+          for Everyone
+        </h1>
+        <p class="hero-subtitle">
+          Real-time participation analytics, intelligent auto-moderation, and 
+          gentle nudging to ensure every voice is heard in your meetings.
+        </p>
+      </div>
+
+      <!-- Feature Cards -->
+      <div class="features">
+        <div class="feature-card">
+          <div class="feature-icon analytics">📊</div>
+          <h3>Real-Time Analytics</h3>
+          <p>Track speaking time for every participant with live charts and equity scoring.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon moderation">🤖</div>
+          <h3>Smart Moderation</h3>
+          <p>AI automatically mutes dominant speakers after configurable time thresholds.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon nudging">💬</div>
+          <h3>Quiet Nudging</h3>
+          <p>Gently encourages silent participants to contribute with smart notifications.</p>
+        </div>
+      </div>
+
+      <!-- Action Section -->
+      <div class="action-section">
+        <div class="action-card">
+
+          <!-- Name Input -->
+          <div class="form-group">
+            <label for="user-name">Your Name</label>
+            <input 
+              type="text" 
+              id="user-name" 
+              class="input-field" 
+              placeholder="Enter your name..."
+              autocomplete="off"
+              maxlength="30"
+            >
+            <div class="form-error" id="name-error">Please enter your name (at least 2 characters)</div>
+          </div>
+
+          <!-- Create Room -->
+          <button class="btn-create" id="btn-create">
+            <i data-lucide="plus-circle" style="width:20px;height:20px;margin-right:8px"></i>
+            Create New Room
+          </button>
+
+          <!-- Divider -->
+          <div class="divider">or join existing</div>
+
+          <!-- Join Room -->
+          <div class="join-row">
+            <input 
+              type="text" 
+              id="room-code" 
+              class="input-field" 
+              placeholder="Enter room code..."
+              autocomplete="off"
+              maxlength="10"
+            >
+            <button class="btn-join" id="btn-join">
+              <i data-lucide="log-in" style="width:18px;height:18px;margin-right:6px"></i>
+              Join
+            </button>
+          </div>
+          <div class="form-error" id="room-error">Please enter a valid room code</div>
+
+        </div>
+      </div>
+
+    </main>
+
+    <!-- ====== Footer ====== -->
+    <footer class="landing-footer">
+      Built with <span class="heart">♥</span> for <span>IIT Ropar</span> &nbsp;|&nbsp; 
+      Prof. Sudarshan Iyengar
+    </footer>
+
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Lucide Icons (Served Locally) -->
+  <script src="js/vendor/lucide.min.js"></script>
+
+  <!-- App Logic -->
+  <script src="js/app.js"></script>
+
+</body>
+</html>
