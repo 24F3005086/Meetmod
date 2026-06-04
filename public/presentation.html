@@ -7,30 +7,29 @@
   <!-- Google Fonts: Outfit & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <!-- html2pdf.js for exporting slides -->
   <script src="/js/vendor/html2pdf.bundle.min.js"></script>
-
   
   <style>
     /* CSS Variables matching main app's global.css */
     :root {
-      --bg-primary: #0a0a0f;
-      --bg-secondary: #12121a;
-      --bg-tertiary: #1a1a2e;
+      --bg-primary: #08080c;
+      --bg-secondary: #0f0f15;
+      --bg-tertiary: #141424;
       --bg-glass: rgba(255, 255, 255, 0.03);
       --accent-primary: #6c5ce7;
       --accent-secondary: #00cec9;
       --accent-gradient: linear-gradient(135deg, #6c5ce7, #00cec9);
       --text-primary: #ffffff;
       --text-secondary: rgba(255, 255, 255, 0.7);
-      --text-muted: rgba(255, 255, 255, 0.4);
+      --text-muted: rgba(255, 255, 255, 0.45);
       --radius-lg: 16px;
       --radius-xl: 24px;
       --glass-blur: blur(20px);
-      --shadow-lg: 0 20px 60px rgba(0,0,0,0.6);
+      --shadow-lg: 0 20px 50px rgba(0,0,0,0.7);
       --transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
@@ -54,8 +53,8 @@
     .orb {
       position: absolute;
       border-radius: 50%;
-      filter: blur(120px);
-      opacity: 0.15;
+      filter: blur(140px);
+      opacity: 0.12;
       z-index: 1;
       pointer-events: none;
     }
@@ -83,7 +82,7 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 40px 60px;
+      padding: 30px 50px;
     }
 
     /* Top Bar */
@@ -91,7 +90,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
     }
     .logo {
       font-family: 'Outfit', sans-serif;
@@ -105,20 +104,20 @@
       gap: 8px;
     }
     .logo-badge {
-      font-size: 10px;
+      font-size: 9px;
       font-weight: 700;
       letter-spacing: 1px;
       text-transform: uppercase;
-      padding: 4px 10px;
+      padding: 3px 8px;
       border-radius: 20px;
       background: rgba(108, 92, 231, 0.15);
       border: 1px solid rgba(108, 92, 231, 0.3);
       color: #6c5ce7;
-      margin-left: 8px;
-      -webkit-text-fill-color: initial; /* Reset text gradient for badge */
+      margin-left: 4px;
+      -webkit-text-fill-color: initial;
     }
     .presentation-title {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--text-muted);
       letter-spacing: 2px;
       text-transform: uppercase;
@@ -140,7 +139,7 @@
       width: 100%;
       height: 100%;
       opacity: 0;
-      transform: scale(0.95) translateY(20px);
+      transform: scale(0.96) translateY(15px);
       pointer-events: none;
       transition: var(--transition);
       display: flex;
@@ -156,73 +155,78 @@
     /* Slide Titles & Layouts */
     h1 {
       font-family: 'Outfit', sans-serif;
-      font-size: 56px;
+      font-size: 50px;
       font-weight: 800;
-      line-height: 1.1;
+      line-height: 1.15;
       margin-bottom: 16px;
     }
     .slide-title {
       font-family: 'Outfit', sans-serif;
-      font-size: 38px;
+      font-size: 34px;
       font-weight: 700;
-      margin-bottom: 24px;
+      margin-bottom: 16px;
       background: linear-gradient(to right, #fff, var(--text-secondary));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
     .subtitle {
-      font-size: 18px;
+      font-size: 16px;
       color: var(--text-secondary);
-      margin-bottom: 32px;
-      max-width: 700px;
-      line-height: 1.5;
+      margin-bottom: 24px;
+      max-width: 750px;
+      line-height: 1.6;
     }
 
     /* Grids & Cards */
     .grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 40px;
-      align-items: center;
+      gap: 30px;
+      align-items: stretch;
     }
     .grid-3 {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
-      gap: 24px;
+      gap: 20px;
+      align-items: stretch;
     }
 
     .card {
       background: var(--bg-glass);
       backdrop-filter: var(--glass-blur);
       -webkit-backdrop-filter: var(--glass-blur);
-      border: 1px solid rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.05);
       border-radius: var(--radius-lg);
-      padding: 32px;
+      padding: 24px;
       transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
     }
     .card:hover {
-      border-color: rgba(108, 92, 231, 0.3);
-      transform: translateY(-5px);
+      border-color: rgba(108, 92, 231, 0.25);
+      transform: translateY(-3px);
+      background: rgba(255,255,255,0.04);
     }
     .card-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
       background: rgba(108, 92, 231, 0.1);
       display: flex;
       align-items: center;
       justify-content: center;
       color: #6c5ce7;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
     .card-title {
       font-family: 'Outfit', sans-serif;
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 700;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
     }
     .card-desc {
-      font-size: 14px;
+      font-size: 13px;
       color: var(--text-secondary);
       line-height: 1.6;
     }
@@ -233,22 +237,22 @@
     }
     .bullet-list li {
       position: relative;
-      padding-left: 28px;
-      margin-bottom: 18px;
-      font-size: 16px;
+      padding-left: 24px;
+      margin-bottom: 12px;
+      font-size: 14px;
       color: var(--text-secondary);
-      line-height: 1.6;
+      line-height: 1.5;
     }
     .bullet-list li::before {
       content: '';
       position: absolute;
       left: 0;
-      top: 8px;
-      width: 8px;
-      height: 8px;
+      top: 6px;
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
       background: var(--accent-secondary);
-      box-shadow: 0 0 10px var(--accent-secondary);
+      box-shadow: 0 0 8px var(--accent-secondary);
     }
     .bullet-list li strong {
       color: #fff;
@@ -256,16 +260,12 @@
 
     /* Math block */
     .math-block {
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px dashed rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
-      padding: 24px;
-      margin: 20px 0;
-      font-family: 'Courier New', Courier, monospace;
-      font-size: 20px;
+      background: rgba(255, 255, 255, 0.015);
+      border: 1px dashed rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 16px;
+      margin: 12px 0;
       text-align: center;
-      color: #00cec9;
-      text-shadow: 0 0 10px rgba(0, 206, 201, 0.2);
     }
 
     /* System Architecture Visual Layout */
@@ -274,18 +274,18 @@
       justify-content: space-between;
       align-items: center;
       width: 100%;
-      padding: 20px 0;
+      padding: 15px 0;
+      gap: 5px;
     }
     .arch-node {
       background: var(--bg-glass);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 12px;
-      padding: 16px 20px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      padding: 12px 14px;
       text-align: center;
       flex: 1;
-      max-width: 180px;
+      max-width: 170px;
       z-index: 3;
-      box-shadow: var(--shadow-lg);
     }
     .arch-node.highlight {
       border-color: #6c5ce7;
@@ -293,18 +293,19 @@
     }
     .arch-node-title {
       font-weight: 700;
-      font-size: 13px;
-      margin-bottom: 6px;
+      font-size: 12px;
+      margin-bottom: 4px;
+      color: #fff;
     }
     .arch-node-subtitle {
-      font-size: 10px;
+      font-size: 9px;
       color: var(--text-muted);
     }
     .arch-arrow {
       height: 2px;
-      background: linear-gradient(to right, rgba(108, 92, 231, 0.5), rgba(0, 206, 201, 0.5));
+      background: linear-gradient(to right, rgba(108, 92, 231, 0.4), rgba(0, 206, 201, 0.4));
       flex: 1;
-      margin: 0 12px;
+      margin: 0 8px;
       position: relative;
     }
     .arch-arrow::after {
@@ -312,10 +313,10 @@
       position: absolute;
       right: 0;
       top: -3px;
-      width: 8px;
-      height: 8px;
-      border-top: 2px solid rgba(0, 206, 201, 0.8);
-      border-right: 2px solid rgba(0, 206, 201, 0.8);
+      width: 7px;
+      height: 7px;
+      border-top: 2px solid rgba(0, 206, 201, 0.6);
+      border-right: 2px solid rgba(0, 206, 201, 0.6);
       transform: rotate(45deg);
     }
 
@@ -324,7 +325,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 20px;
+      margin-top: 15px;
       position: relative;
     }
     .controls {
@@ -335,8 +336,8 @@
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 50%;
-      width: 44px;
-      height: 44px;
+      width: 40px;
+      height: 40px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -346,11 +347,11 @@
       z-index: 5;
     }
     .nav-btn:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.15);
     }
     .slide-counter {
-      font-size: 14px;
+      font-size: 13px;
       color: var(--text-secondary);
       font-weight: 500;
     }
@@ -361,8 +362,8 @@
       left: 0;
       bottom: -15px;
       width: 100%;
-      height: 4px;
-      background: rgba(255, 255, 255, 0.05);
+      height: 3px;
+      background: rgba(255, 255, 255, 0.04);
       border-radius: 2px;
     }
     .progress-bar {
@@ -388,33 +389,33 @@
       background: var(--accent-gradient);
       border: none;
       color: #0a0a0f;
-      padding: 12px 24px;
+      padding: 10px 20px;
       border-radius: 30px;
       font-family: 'Outfit', sans-serif;
       font-weight: 700;
-      font-size: 15px;
+      font-size: 14px;
       cursor: pointer;
       text-decoration: none;
-      box-shadow: 0 0 20px rgba(108, 92, 231, 0.3);
+      box-shadow: 0 0 15px rgba(108, 92, 231, 0.25);
       transition: all 0.3s ease;
     }
     .demo-btn:hover {
-      box-shadow: 0 0 30px rgba(0, 206, 201, 0.5);
+      box-shadow: 0 0 25px rgba(0, 206, 201, 0.4);
       transform: translateY(-2px);
     }
 
     .key-hint {
-      font-size: 11px;
+      font-size: 10px;
       color: var(--text-muted);
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
     }
     .key-cap {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 4px;
-      padding: 2px 6px;
+      padding: 1px 5px;
       font-family: monospace;
     }
 
@@ -423,25 +424,26 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 20px;
       color: var(--text-secondary);
-      padding: 6px 14px;
-      font-size: 12px;
+      padding: 6px 12px;
+      font-size: 11px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s ease;
       font-family: 'Outfit', sans-serif;
     }
     .export-btn:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
       color: #fff;
     }
     
     .spinner {
       animation: spin 1s linear infinite;
+      display: inline-block;
     }
     @keyframes spin {
       to { transform: rotate(360deg); }
@@ -450,7 +452,7 @@
     /* Print styles */
     @media print {
       body {
-        background: #0a0a0f !important;
+        background: #08080c !important;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
       }
@@ -475,7 +477,7 @@
         break-after: page !important;
         height: 100vh !important;
         justify-content: center !important;
-        padding: 60px !important;
+        padding: 40px !important;
       }
     }
   </style>
@@ -497,7 +499,7 @@
       </div>
       <div style="display: flex; align-items: center; gap: 16px;">
         <button class="export-btn" id="export-pdf-btn" onclick="exportPDF()">
-          <i data-lucide="download" style="width: 14px; height: 14px;"></i>
+          <i data-lucide="download" style="width: 13px; height: 13px;"></i>
           Export PDF
         </button>
         <div class="presentation-title">Project Presentation</div>
@@ -509,16 +511,16 @@
 
       <!-- Slide 1: Title Slide -->
       <div class="slide active" id="slide-1">
-        <h1>Algorithmic Moderation and <span class="gradient-text">Conversational Equity</span></h1>
-        <p class="subtitle" style="font-size: 20px; font-weight: 500;">
+        <h1>Algorithmic Moderation and <br><span class="gradient-text">Conversational Equity</span></h1>
+        <p class="subtitle" style="font-size: 18px; font-weight: 500; margin-top: 10px;">
           A lightweight WebRTC platform designed for online classrooms and group discussions. Tracks, analyzes, and gates participation metrics in real time.
         </p>
-        <div style="margin-top: 10px; display: flex; align-items: center; gap: 24px;">
+        <div style="margin-top: 15px; display: flex; align-items: center; gap: 24px;">
           <a href="/" target="_blank" class="demo-btn">
             <i data-lucide="play-circle" style="width: 18px; height: 18px; fill: #0a0a0f;"></i>
             Launch Live Platform
           </a>
-          <div style="font-size: 13px; color: var(--text-secondary);">
+          <div style="font-size: 12px; color: var(--text-secondary); line-height: 1.5;">
             Advisor: <strong>Prof. Sudarshan Iyengar</strong><br>
             Developed by: <strong>IIT Ropar Intern</strong>
           </div>
@@ -530,14 +532,14 @@
         <h2 class="slide-title">The Participation Imbalance Problem</h2>
         <div class="grid-2">
           <div class="card">
-            <div class="card-icon"><i data-lucide="alert-triangle"></i></div>
+            <div class="card-icon"><i data-lucide="alert-triangle" style="width: 20px; height: 20px;"></i></div>
             <div class="card-title">Conversational Monopoly</div>
             <div class="card-desc">
               In virtual classrooms or discussions, statistically 20% of dominant voices occupy over 80% of talking time. This forces quieter students to retreat into passivity (the free-rider dilemma).
             </div>
           </div>
           <div class="card">
-            <div class="card-icon"><i data-lucide="eye-off"></i></div>
+            <div class="card-icon"><i data-lucide="eye-off" style="width: 20px; height: 20px;"></i></div>
             <div class="card-title">Platform Passivity</div>
             <div class="card-desc">
               Existing software (Zoom, Teams, Meet) are passive communication streams. They lack dynamic tools to track individual participation rates or intervene algorithmically in real-time.
@@ -552,17 +554,17 @@
         <p class="subtitle">An active, analytical web platform built to balance group discussions.</p>
         <div class="grid-3">
           <div class="card">
-            <div class="card-icon"><i data-lucide="bar-chart-2"></i></div>
+            <div class="card-icon"><i data-lucide="bar-chart-2" style="width: 20px; height: 20px;"></i></div>
             <div class="card-title">Real-Time Metrics</div>
             <div class="card-desc">Tracks exact speaking duration, percentage distribution, and inter-peer interruptions on a live sidebar dashboard.</div>
           </div>
           <div class="card">
-            <div class="card-icon"><i data-lucide="shield-alert"></i></div>
+            <div class="card-icon"><i data-lucide="shield-alert" style="width: 20px; height: 20px;"></i></div>
             <div class="card-title">Active Moderation</div>
             <div class="card-desc">Automatically prompts warning cues and applies temporary forced-mutes to monopolizing speakers using an engine rule loop.</div>
           </div>
           <div class="card">
-            <div class="card-icon"><i data-lucide="sparkles"></i></div>
+            <div class="card-icon"><i data-lucide="sparkles" style="width: 20px; height: 20px;"></i></div>
             <div class="card-title">Quiet Nudges</div>
             <div class="card-desc">Detects inactive students who have been silent for extended windows and pushes friendly alerts encouraging contribution.</div>
           </div>
@@ -577,7 +579,7 @@
         <div class="arch-flow">
           <div class="arch-node highlight">
             <div class="arch-node-title">Host Client</div>
-            <div class="arch-node-subtitle">P2P Media Control & Real-time Analytics UI</div>
+            <div class="arch-node-subtitle">P2P Media & Analytics UI</div>
           </div>
           <div class="arch-arrow"></div>
           <div class="arch-node">
@@ -596,7 +598,7 @@
           </div>
         </div>
 
-        <ul class="bullet-list" style="margin-top: 24px;">
+        <ul class="bullet-list" style="margin-top: 15px;">
           <li><strong>WebRTC mesh:</strong> Standardized direct peer audio/video connections bypass complex server routing.</li>
           <li><strong>Client-Side VAD (Voice Activity Detection):</strong> Locally handles speech amplitude checking using <code>Hark.js</code>, avoiding server CPU strain.</li>
         </ul>
@@ -607,23 +609,29 @@
         <h2 class="slide-title">Algorithmic Rigor: The Gini Index</h2>
         <div class="grid-2">
           <div>
-            <p class="subtitle" style="font-size: 16px; margin-bottom: 20px;">
+            <p class="subtitle" style="font-size: 14px; margin-bottom: 12px; line-height: 1.5;">
               Instead of standard deviation, we adopt the economic **Gini Coefficient** ($G$) to evaluate how evenly conversation time is distributed among the $n$ participants.
             </p>
             <div class="math-block">
-              G = ΣΣ |t_i - t_j| / (2 * n * Σ t_i)
+              <div style="display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Outfit', sans-serif; font-size: 20px; color: #00cec9;">
+                <span>G = </span>
+                <div style="display: inline-flex; flex-direction: column; align-items: center; font-size: 14px;">
+                  <span style="border-bottom: 2px solid #00cec9; padding: 0 10px; font-weight: bold;">&sum;<sub>i=1</sub><sup>n</sup> &sum;<sub>j=1</sub><sup>n</sup> |t<sub>i</sub> - t<sub>j</sub>|</span>
+                  <span style="padding: 0 10px; font-weight: bold;">2n &sum;<sub>i=1</sub><sup>n</sup> t<sub>i</sub></span>
+                </div>
+              </div>
             </div>
             <ul class="bullet-list">
               <li><strong>G = 0.00:</strong> Perfect conversation equality.</li>
               <li><strong>G = 1.00:</strong> Complete monopoly (1 speaker).</li>
             </ul>
           </div>
-          <div class="card" style="border-left: 4px solid var(--accent-secondary);">
+          <div class="card" style="border-left: 4px solid var(--accent-secondary); justify-content: center;">
             <div class="card-title">User-Facing Equity Score</div>
-            <p class="card-desc" style="font-size: 15px; margin-bottom: 12px;">
+            <p class="card-desc" style="font-size: 13px; margin-bottom: 10px;">
               To make this highly readable, the platform displays the **Equity Score**:
             </p>
-            <div style="font-size: 28px; font-weight: 800; color: #55efc4; margin-bottom: 12px; font-family: 'Outfit';">
+            <div style="font-size: 24px; font-weight: 800; color: #55efc4; margin-bottom: 8px; font-family: 'Outfit';">
               Score = (1 - G) × 100
             </div>
             <p class="card-desc">
@@ -649,8 +657,8 @@
               <li><strong>Visual Evidence:</strong> Immediately logs to the meeting's public timeline (e.g. <em>"Student A interrupted Professor"</em>).</li>
             </ul>
           </div>
-          <div class="card" style="padding: 24px; font-family: monospace; font-size: 13px; color: #55efc4; background: rgba(0,0,0,0.4); border-color: rgba(0, 206, 201, 0.2);">
-            <div style="color: var(--text-muted); margin-bottom: 8px;">// Socket.io Collision Snippet</div>
+          <div class="card" style="padding: 20px; font-family: monospace; font-size: 11px; color: #55efc4; background: rgba(0,0,0,0.3); border-color: rgba(0, 206, 201, 0.15); justify-content: center;">
+            <div style="color: var(--text-muted); margin-bottom: 6px;">// Socket.io Collision Snippet</div>
             socket.on('speaking-start', () => {<br>
             &nbsp;&nbsp;const active = tracker.getActiveSpeakers(room);<br>
             &nbsp;&nbsp;if (active.length > 0) {<br>
@@ -670,21 +678,21 @@
         <p class="subtitle">Configurable rule thresholds applied recursively on the server-side update loop:</p>
         
         <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
-          <div class="card" style="padding: 20px; border-top: 3px solid #ffb142;">
-            <div style="font-weight: 700; margin-bottom: 6px;">1. Warning Alert</div>
-            <div style="font-size: 11px; color: var(--text-secondary);">Triggers after 120s of continuous monologue. Alerts speaker with a toast popup.</div>
+          <div class="card" style="padding: 16px; border-top: 3px solid #ffb142;">
+            <div style="font-weight: 700; margin-bottom: 4px; font-size: 14px; color: #fff;">1. Warning Alert</div>
+            <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.5;">Triggers after 120s of continuous monologue. Alerts speaker with a toast popup.</div>
           </div>
-          <div class="card" style="padding: 20px; border-top: 3px solid #ff7675;">
-            <div style="font-weight: 700; margin-bottom: 6px;">2. Countdown</div>
-            <div style="font-size: 11px; color: var(--text-secondary);">Triggers at 180s. A high-intensity full screen overlay forces visual focus.</div>
+          <div class="card" style="padding: 16px; border-top: 3px solid #ff7675;">
+            <div style="font-weight: 700; margin-bottom: 4px; font-size: 14px; color: #fff;">2. Countdown</div>
+            <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.5;">Triggers at 180s. A high-intensity full screen overlay forces visual focus.</div>
           </div>
-          <div class="card" style="padding: 20px; border-top: 3px solid #d63031;">
-            <div style="font-weight: 700; margin-bottom: 6px;">3. Force Mute</div>
-            <div style="font-size: 11px; color: var(--text-secondary);">Triggers at 200s. Mutes local audio capture via peer tracks on the client.</div>
+          <div class="card" style="padding: 16px; border-top: 3px solid #d63031;">
+            <div style="font-weight: 700; margin-bottom: 4px; font-size: 14px; color: #fff;">3. Force Mute</div>
+            <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.5;">Triggers at 200s. Mutes local audio capture via peer tracks on the client.</div>
           </div>
-          <div class="card" style="padding: 20px; border-top: 3px solid #00cec9;">
-            <div style="font-weight: 700; margin-bottom: 6px;">4. Inactive Nudge</div>
-            <div style="font-size: 11px; color: var(--text-secondary);">Identifies lowest speak percentage and prompts to invite their insights.</div>
+          <div class="card" style="padding: 16px; border-top: 3px solid #00cec9;">
+            <div style="font-weight: 700; margin-bottom: 4px; font-size: 14px; color: #fff;">4. Inactive Nudge</div>
+            <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.5;">Identifies lowest speak percentage and prompts to invite their insights.</div>
           </div>
         </div>
       </div>
@@ -701,16 +709,16 @@
               <li><strong>Ghost Request Prevention:</strong> Socket disconnect handles removal of knocking users who leave early, automatically canceling active toasts.</li>
             </ul>
           </div>
-          <div class="card" style="background: rgba(108, 92, 231, 0.05); border-color: rgba(108, 92, 231, 0.3);">
-            <div style="display: flex; gap: 8px; align-items: center; color: #6c5ce7; font-weight: 700; margin-bottom: 12px;">
-              <i data-lucide="user-check"></i> ADMISSION NOTIFICATION
+          <div class="card" style="background: rgba(108, 92, 231, 0.05); border-color: rgba(108, 92, 231, 0.3); justify-content: center;">
+            <div style="display: flex; gap: 8px; align-items: center; color: #6c5ce7; font-weight: 700; margin-bottom: 10px;">
+              <i data-lucide="user-check" style="width: 18px; height: 18px;"></i> ADMISSION NOTIFICATION
             </div>
-            <p class="card-desc" style="margin-bottom: 16px;">
+            <p class="card-desc" style="margin-bottom: 12px; font-size: 13px;">
               "Student 1 wants to join this room."
             </p>
             <div style="display: flex; gap: 8px;">
-              <span style="background: #55efc4; color: #0a0a0f; padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 11px;">Admit</span>
-              <span style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 11px;">Decline</span>
+              <span style="background: #55efc4; color: #0a0a0f; padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 10px;">Admit</span>
+              <span style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 10px; color: #fff;">Decline</span>
             </div>
           </div>
         </div>
@@ -721,14 +729,14 @@
         <h2 class="slide-title">Post-Session Analytics & Reports</h2>
         <div class="grid-2">
           <div class="card">
-            <div class="card-icon"><i data-lucide="database"></i></div>
+            <div class="card-icon"><i data-lucide="database" style="width: 20px; height: 20px;"></i></div>
             <div class="card-title">MongoDB Integration</div>
             <div class="card-desc">
               When a room becomes empty, the server compiles overall statistics, updates the <code>SessionReport</code> collection in MongoDB Atlas, and redirects students to the final dashboard.
             </div>
           </div>
           <div class="card">
-            <div class="card-icon"><i data-lucide="file-text"></i></div>
+            <div class="card-icon"><i data-lucide="file-text" style="width: 20px; height: 20px;"></i></div>
             <div class="card-title">PDF Export Dashboard</div>
             <div class="card-desc">
               A print-ready summary of Gini Coefficients, talk time percentages, and interruption statistics is displayed, exportable locally with a single click.
@@ -740,17 +748,17 @@
       <!-- Slide 10: Future Milestones -->
       <div class="slide" id="slide-10">
         <h2 class="slide-title">Future Milestones</h2>
-        <div class="grid-3" style="margin-top: 10px;">
+        <div class="grid-3">
           <div class="card" style="border-bottom: 3px solid var(--accent-primary);">
-            <div class="card-title" style="font-size: 18px;">SFU Migration</div>
+            <div class="card-title" style="font-size: 16px;">SFU Migration</div>
             <p class="card-desc">Transition from a WebRTC P2P mesh network to an SFU framework (like LiveKit) to scale up to hundreds of concurrent class participants.</p>
           </div>
           <div class="card" style="border-bottom: 3px solid var(--accent-primary);">
-            <div class="card-title" style="font-size: 18px;">AI Summarizer</div>
+            <div class="card-title" style="font-size: 16px;">AI Summarizer</div>
             <p class="card-desc">Integrate OpenAI/Whisper speech-to-text models to generate automated action summaries alongside participation reports.</p>
           </div>
           <div class="card" style="border-bottom: 3px solid var(--accent-primary);">
-            <div class="card-title" style="font-size: 18px;">Network Visuals</div>
+            <div class="card-title" style="font-size: 16px;">Network Visuals</div>
             <p class="card-desc">Add interaction social graphs visualizing who interrupts whom, mapping the social network structure of conversations.</p>
           </div>
         </div>
@@ -853,27 +861,29 @@
       // Create temporary presentation view container for high quality export
       const tempContainer = document.createElement('div');
       tempContainer.style.cssText = `
-        width: 1120px;
-        background: #0a0a0f;
+        width: 1000px;
+        background: #08080c;
         color: #ffffff;
         font-family: 'Inter', sans-serif;
+        box-sizing: border-box;
       `;
 
       // Copy each slide
       slides.forEach((slide, idx) => {
         const clone = slide.cloneNode(true);
         clone.style.cssText = `
-          width: 1120px;
-          height: 630px;
+          width: 1000px;
+          height: 562px; /* 16:9 for 1000px width */
           display: flex !important;
           flex-direction: column;
           justify-content: center;
-          padding: 60px;
+          padding: 40px 50px;
           box-sizing: border-box;
           position: relative;
           opacity: 1 !important;
           transform: none !important;
-          background: #0a0a0f;
+          background: #08080c;
+          overflow: hidden;
           page-break-after: always;
           break-after: page;
         `;
@@ -886,23 +896,47 @@
         const footer = document.createElement('div');
         footer.style.cssText = `
           position: absolute;
-          bottom: 24px;
-          left: 60px;
-          right: 60px;
+          bottom: 20px;
+          left: 50px;
+          right: 50px;
           display: flex;
           justify-content: space-between;
           align-items: center;
           font-size: 10px;
           color: rgba(255, 255, 255, 0.25);
           border-top: 1px solid rgba(255, 255, 255, 0.05);
-          padding-top: 12px;
+          padding-top: 8px;
           font-family: 'Inter', sans-serif;
         `;
         footer.innerHTML = `
           <div>MeetMod — Participation Analytics Platform</div>
-          <div>IIT Ropar Intern | Slide ${idx + 1}</div>
+          <div>IIT Ropar Intern | Slide ${idx + 1} of ${totalSlides}</div>
         `;
         clone.appendChild(footer);
+
+        // Adjust font sizes specifically for PDF rendering to avoid overflows
+        clone.querySelectorAll('h1').forEach(el => el.style.fontSize = '36px');
+        clone.querySelectorAll('.slide-title').forEach(el => el.style.fontSize = '26px');
+        clone.querySelectorAll('.subtitle').forEach(el => {
+          el.style.fontSize = '13px';
+          el.style.marginBottom = '15px';
+        });
+        clone.querySelectorAll('.card').forEach(el => {
+          el.style.padding = '16px';
+        });
+        clone.querySelectorAll('.card-title').forEach(el => el.style.fontSize = '14px');
+        clone.querySelectorAll('.card-desc').forEach(el => el.style.fontSize = '11px');
+        clone.querySelectorAll('.bullet-list li').forEach(el => {
+          el.style.fontSize = '12px';
+          el.style.marginBottom = '6px';
+        });
+        clone.querySelectorAll('.math-block').forEach(el => {
+          el.style.padding = '10px';
+          el.style.margin = '8px 0';
+        });
+        clone.querySelectorAll('.arch-node-title').forEach(el => el.style.fontSize = '10px');
+        clone.querySelectorAll('.arch-node-subtitle').forEach(el => el.style.fontSize = '8px');
+
         tempContainer.appendChild(clone);
       });
 
@@ -912,8 +946,8 @@
         margin: 0,
         filename: 'MeetMod_Project_Presentation.pdf',
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, backgroundColor: '#0a0a0f' },
-        jsPDF: { unit: 'px', format: [1120, 630], orientation: 'landscape' }
+        html2canvas: { scale: 2, useCORS: true, backgroundColor: '#08080c' },
+        jsPDF: { unit: 'px', format: [1000, 562], orientation: 'landscape' }
       };
 
       html2pdf().set(opt).from(tempContainer).save().then(() => {
