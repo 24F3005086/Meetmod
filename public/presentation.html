@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MeetMod — Presentation Slides</title>
+  <!-- Google Fonts: Outfit & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <style>
+    /* CSS Variables matching main app's global.css */
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #12121a;
+      --bg-tertiary: #1a1a2e;
+      --bg-glass: rgba(255, 255, 255, 0.03);
+      --accent-primary: #6c5ce7;
+      --accent-secondary: #00cec9;
+      --accent-gradient: linear-gradient(135deg, #6c5ce7, #00cec9);
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255, 255, 255, 0.7);
+      --text-muted: rgba(255, 255, 255, 0.4);
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+      --glass-blur: blur(20px);
+      --shadow-lg: 0 20px 60px rgba(0,0,0,0.6);
+      --transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      position: relative;
+    }
+
+    /* Ambient glowing background orbs */
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.15;
+      z-index: 1;
+      pointer-events: none;
+    }
+    .orb-1 {
+      width: 40vw;
+      height: 40vw;
+      background: var(--accent-primary);
+      top: -10%;
+      left: -10%;
+    }
+    .orb-2 {
+      width: 50vw;
+      height: 50vw;
+      background: var(--accent-secondary);
+      bottom: -15%;
+      right: -10%;
+    }
+
+    /* Slide Container */
+    .presentation-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 40px 60px;
+    }
+
+    /* Top Bar */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .logo {
+      font-family: 'Outfit', sans-serif;
+      font-size: 24px;
+      font-weight: 800;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .logo-badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: rgba(108, 92, 231, 0.15);
+      border: 1px solid rgba(108, 92, 231, 0.3);
+      color: #6c5ce7;
+      margin-left: 8px;
+      -webkit-text-fill-color: initial; /* Reset text gradient for badge */
+    }
+    .presentation-title {
+      font-size: 12px;
+      color: var(--text-muted);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    /* Slides Wrapper */
+    .slides-wrapper {
+      flex: 1;
+      position: relative;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Slide Styling */
+    .slide {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      transform: scale(0.95) translateY(20px);
+      pointer-events: none;
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .slide.active {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+      pointer-events: auto;
+    }
+
+    /* Slide Titles & Layouts */
+    h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 56px;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+    .slide-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 38px;
+      font-weight: 700;
+      margin-bottom: 24px;
+      background: linear-gradient(to right, #fff, var(--text-secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .subtitle {
+      font-size: 18px;
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+      max-width: 700px;
+      line-height: 1.5;
+    }
+
+    /* Grids & Cards */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 24px;
+    }
+
+    .card {
+      background: var(--bg-glass);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      transition: all 0.3s ease;
+    }
+    .card:hover {
+      border-color: rgba(108, 92, 231, 0.3);
+      transform: translateY(-5px);
+    }
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(108, 92, 231, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #6c5ce7;
+      margin-bottom: 20px;
+    }
+    .card-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .card-desc {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* Bullet List items */
+    .bullet-list {
+      list-style: none;
+    }
+    .bullet-list li {
+      position: relative;
+      padding-left: 28px;
+      margin-bottom: 18px;
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+    .bullet-list li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 8px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-secondary);
+      box-shadow: 0 0 10px var(--accent-secondary);
+    }
+    .bullet-list li strong {
+      color: #fff;
+    }
+
+    /* Math block */
+    .math-block {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px dashed rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 24px;
+      margin: 20px 0;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 20px;
+      text-align: center;
+      color: #00cec9;
+      text-shadow: 0 0 10px rgba(0, 206, 201, 0.2);
+    }
+
+    /* System Architecture Visual Layout */
+    .arch-flow {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      padding: 20px 0;
+    }
+    .arch-node {
+      background: var(--bg-glass);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 16px 20px;
+      text-align: center;
+      flex: 1;
+      max-width: 180px;
+      z-index: 3;
+      box-shadow: var(--shadow-lg);
+    }
+    .arch-node.highlight {
+      border-color: #6c5ce7;
+      background: rgba(108, 92, 231, 0.05);
+    }
+    .arch-node-title {
+      font-weight: 700;
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+    .arch-node-subtitle {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+    .arch-arrow {
+      height: 2px;
+      background: linear-gradient(to right, rgba(108, 92, 231, 0.5), rgba(0, 206, 201, 0.5));
+      flex: 1;
+      margin: 0 12px;
+      position: relative;
+    }
+    .arch-arrow::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: -3px;
+      width: 8px;
+      height: 8px;
+      border-top: 2px solid rgba(0, 206, 201, 0.8);
+      border-right: 2px solid rgba(0, 206, 201, 0.8);
+      transform: rotate(45deg);
+    }
+
+    /* Bottom Nav Control Bar */
+    .bottom-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 20px;
+      position: relative;
+    }
+    .controls {
+      display: flex;
+      gap: 12px;
+    }
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      z-index: 5;
+    }
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+    .slide-counter {
+      font-size: 14px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    /* Linear Slide Progress Indicator */
+    .progress-bar-container {
+      position: absolute;
+      left: 0;
+      bottom: -15px;
+      width: 100%;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 2px;
+    }
+    .progress-bar {
+      height: 100%;
+      background: var(--accent-gradient);
+      width: 10%;
+      border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+
+    /* Highlights & Badges */
+    .gradient-text {
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Demo Button link */
+    .demo-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent-gradient);
+      border: none;
+      color: #0a0a0f;
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 0 20px rgba(108, 92, 231, 0.3);
+      transition: all 0.3s ease;
+    }
+    .demo-btn:hover {
+      box-shadow: 0 0 30px rgba(0, 206, 201, 0.5);
+      transform: translateY(-2px);
+    }
+
+    .key-hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .key-cap {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient orbs -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <div class="presentation-container">
+    
+    <!-- Top Bar -->
+    <div class="top-bar">
+      <div class="logo">
+        <i data-lucide="activity" style="width: 24px; height: 24px; color: #6c5ce7;"></i>
+        MeetMod
+        <span class="logo-badge">IIT Ropar</span>
+      </div>
+      <div class="presentation-title">Project Presentation</div>
+    </div>
+
+    <!-- Slides Wrapper -->
+    <div class="slides-wrapper">
+
+      <!-- Slide 1: Title Slide -->
+      <div class="slide active" id="slide-1">
+        <h1>Algorithmic Moderation and <span class="gradient-text">Conversational Equity</span></h1>
+        <p class="subtitle" style="font-size: 20px; font-weight: 500;">
+          A lightweight WebRTC platform designed for online classrooms and group discussions. Tracks, analyzes, and gates participation metrics in real time.
+        </p>
+        <div style="margin-top: 10px; display: flex; align-items: center; gap: 24px;">
+          <a href="/" target="_blank" class="demo-btn">
+            <i data-lucide="play-circle" style="width: 18px; height: 18px; fill: #0a0a0f;"></i>
+            Launch Live Platform
+          </a>
+          <div style="font-size: 13px; color: var(--text-secondary);">
+            Advisor: <strong>Prof. Sudarshan Iyengar</strong><br>
+            Developed by: <strong>IIT Ropar Intern</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 2: The Problem -->
+      <div class="slide" id="slide-2">
+        <h2 class="slide-title">The Participation Imbalance Problem</h2>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-icon"><i data-lucide="alert-triangle"></i></div>
+            <div class="card-title">Conversational Monopoly</div>
+            <div class="card-desc">
+              In virtual classrooms or discussions, statistically 20% of dominant voices occupy over 80% of talking time. This forces quieter students to retreat into passivity (the free-rider dilemma).
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-icon"><i data-lucide="eye-off"></i></div>
+            <div class="card-title">Platform Passivity</div>
+            <div class="card-desc">
+              Existing software (Zoom, Teams, Meet) are passive communication streams. They lack dynamic tools to track individual participation rates or intervene algorithmically in real-time.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 3: The Solution -->
+      <div class="slide" id="slide-3">
+        <h2 class="slide-title">The Solution: MeetMod</h2>
+        <p class="subtitle">An active, analytical web platform built to balance group discussions.</p>
+        <div class="grid-3">
+          <div class="card">
+            <div class="card-icon"><i data-lucide="bar-chart-2"></i></div>
+            <div class="card-title">Real-Time Metrics</div>
+            <div class="card-desc">Tracks exact speaking duration, percentage distribution, and inter-peer interruptions on a live sidebar dashboard.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon"><i data-lucide="shield-alert"></i></div>
+            <div class="card-title">Active Moderation</div>
+            <div class="card-desc">Automatically prompts warning cues and applies temporary forced-mutes to monopolizing speakers using an engine rule loop.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon"><i data-lucide="sparkles"></i></div>
+            <div class="card-title">Quiet Nudges</div>
+            <div class="card-desc">Detects inactive students who have been silent for extended windows and pushes friendly alerts encouraging contribution.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 4: System Architecture -->
+      <div class="slide" id="slide-4">
+        <h2 class="slide-title">System Architecture</h2>
+        <p class="subtitle">A framework-free Client-Server architecture optimizing real-time media feeds and data archiving.</p>
+        
+        <div class="arch-flow">
+          <div class="arch-node highlight">
+            <div class="arch-node-title">Host Client</div>
+            <div class="arch-node-subtitle">P2P Media Control & Real-time Analytics UI</div>
+          </div>
+          <div class="arch-arrow"></div>
+          <div class="arch-node">
+            <div class="arch-node-title">Signaling Server</div>
+            <div class="arch-node-subtitle">Node.js Express + Socket.io</div>
+          </div>
+          <div class="arch-arrow"></div>
+          <div class="arch-node">
+            <div class="arch-node-title">WebRTC Broker</div>
+            <div class="arch-node-subtitle">PeerJS Mesh Signaling</div>
+          </div>
+          <div class="arch-arrow"></div>
+          <div class="arch-node highlight">
+            <div class="arch-node-title">Database Storage</div>
+            <div class="arch-node-subtitle">MongoDB Atlas & Mongoose</div>
+          </div>
+        </div>
+
+        <ul class="bullet-list" style="margin-top: 24px;">
+          <li><strong>WebRTC mesh:</strong> Standardized direct peer audio/video connections bypass complex server routing.</li>
+          <li><strong>Client-Side VAD (Voice Activity Detection):</strong> Locally handles speech amplitude checking using <code>Hark.js</code>, avoiding server CPU strain.</li>
+        </ul>
+      </div>
+
+      <!-- Slide 5: The Math (Gini Index) -->
+      <div class="slide" id="slide-5">
+        <h2 class="slide-title">Algorithmic Rigor: The Gini Index</h2>
+        <div class="grid-2">
+          <div>
+            <p class="subtitle" style="font-size: 16px; margin-bottom: 20px;">
+              Instead of standard deviation, we adopt the economic **Gini Coefficient** ($G$) to evaluate how evenly conversation time is distributed among the $n$ participants.
+            </p>
+            <div class="math-block">
+              G = ΣΣ |t_i - t_j| / (2 * n * Σ t_i)
+            </div>
+            <ul class="bullet-list">
+              <li><strong>G = 0.00:</strong> Perfect conversation equality.</li>
+              <li><strong>G = 1.00:</strong> Complete monopoly (1 speaker).</li>
+            </ul>
+          </div>
+          <div class="card" style="border-left: 4px solid var(--accent-secondary);">
+            <div class="card-title">User-Facing Equity Score</div>
+            <p class="card-desc" style="font-size: 15px; margin-bottom: 12px;">
+              To make this highly readable, the platform displays the **Equity Score**:
+            </p>
+            <div style="font-size: 28px; font-weight: 800; color: #55efc4; margin-bottom: 12px; font-family: 'Outfit';">
+              Score = (1 - G) × 100
+            </div>
+            <p class="card-desc">
+              Displayed in a circular progress ring on both the live dashboard and the final session report dashboard.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 6: Interruption Collision Engine -->
+      <div class="slide" id="slide-6">
+        <h2 class="slide-title">Interruption Collision Engine</h2>
+        <div class="grid-2">
+          <div>
+            <ul class="bullet-list">
+              <li><strong>Overlap Detection:</strong> When Client B fires a <code>speaking-start</code> signal while Client A is active, the server detects a collision.</li>
+              <li><strong>Dynamic Increments:</strong> 
+                <ul>
+                  <li>Interrupter receives +1 to <em>Given</em> metrics.</li>
+                  <li>Active speaker receives +1 to <em>Received</em> metrics.</li>
+                </ul>
+              </li>
+              <li><strong>Visual Evidence:</strong> Immediately logs to the meeting's public timeline (e.g. <em>"Student A interrupted Professor"</em>).</li>
+            </ul>
+          </div>
+          <div class="card" style="padding: 24px; font-family: monospace; font-size: 13px; color: #55efc4; background: rgba(0,0,0,0.4); border-color: rgba(0, 206, 201, 0.2);">
+            <div style="color: var(--text-muted); margin-bottom: 8px;">// Socket.io Collision Snippet</div>
+            socket.on('speaking-start', () => {<br>
+            &nbsp;&nbsp;const active = tracker.getActiveSpeakers(room);<br>
+            &nbsp;&nbsp;if (active.length > 0) {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;active.forEach(speaker => {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tracker.logInterruption(interrupterId, speaker.id);<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;io.to(room).emit('interruption-occurred', { ... });<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;});<br>
+            &nbsp;&nbsp;}<br>
+            });
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 7: AI-Powered Interventions -->
+      <div class="slide" id="slide-7">
+        <h2 class="slide-title">AI-Powered Interventions</h2>
+        <p class="subtitle">Configurable rule thresholds applied recursively on the server-side update loop:</p>
+        
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+          <div class="card" style="padding: 20px; border-top: 3px solid #ffb142;">
+            <div style="font-weight: 700; margin-bottom: 6px;">1. Warning Alert</div>
+            <div style="font-size: 11px; color: var(--text-secondary);">Triggers after 120s of continuous monologue. Alerts speaker with a toast popup.</div>
+          </div>
+          <div class="card" style="padding: 20px; border-top: 3px solid #ff7675;">
+            <div style="font-weight: 700; margin-bottom: 6px;">2. Countdown</div>
+            <div style="font-size: 11px; color: var(--text-secondary);">Triggers at 180s. A high-intensity full screen overlay forces visual focus.</div>
+          </div>
+          <div class="card" style="padding: 20px; border-top: 3px solid #d63031;">
+            <div style="font-weight: 700; margin-bottom: 6px;">3. Force Mute</div>
+            <div style="font-size: 11px; color: var(--text-secondary);">Triggers at 200s. Mutes local audio capture via peer tracks on the client.</div>
+          </div>
+          <div class="card" style="padding: 20px; border-top: 3px solid #00cec9;">
+            <div style="font-weight: 700; margin-bottom: 6px;">4. Inactive Nudge</div>
+            <div style="font-size: 11px; color: var(--text-secondary);">Identifies lowest speak percentage and prompts to invite their insights.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 8: Gated Admission Lobby -->
+      <div class="slide" id="slide-8">
+        <h2 class="slide-title">Lobby Waiting Room (Admission Control)</h2>
+        <div class="grid-2">
+          <div>
+            <ul class="bullet-list">
+              <li><strong>Entry Gating:</strong> Non-host attendees are suspended in a waiting room overlay upon joining.</li>
+              <li><strong>Interactive Toasts:</strong> Host receives immediate notifications with dedicated <strong>Admit</strong> and <strong>Decline</strong> controls.</li>
+              <li><strong>Device Security:</strong> Client-side media constraints (`getUserMedia`) are bypassed and locked until approved, preventing accidental mic/camera leaks in the lobby.</li>
+              <li><strong>Ghost Request Prevention:</strong> Socket disconnect handles removal of knocking users who leave early, automatically canceling active toasts.</li>
+            </ul>
+          </div>
+          <div class="card" style="background: rgba(108, 92, 231, 0.05); border-color: rgba(108, 92, 231, 0.3);">
+            <div style="display: flex; gap: 8px; align-items: center; color: #6c5ce7; font-weight: 700; margin-bottom: 12px;">
+              <i data-lucide="user-check"></i> ADMISSION NOTIFICATION
+            </div>
+            <p class="card-desc" style="margin-bottom: 16px;">
+              "Student 1 wants to join this room."
+            </p>
+            <div style="display: flex; gap: 8px;">
+              <span style="background: #55efc4; color: #0a0a0f; padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 11px;">Admit</span>
+              <span style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 11px;">Decline</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 9: Persistence & Session Archival -->
+      <div class="slide" id="slide-9">
+        <h2 class="slide-title">Post-Session Analytics & Reports</h2>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-icon"><i data-lucide="database"></i></div>
+            <div class="card-title">MongoDB Integration</div>
+            <div class="card-desc">
+              When a room becomes empty, the server compiles overall statistics, updates the <code>SessionReport</code> collection in MongoDB Atlas, and redirects students to the final dashboard.
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-icon"><i data-lucide="file-text"></i></div>
+            <div class="card-title">PDF Export Dashboard</div>
+            <div class="card-desc">
+              A print-ready summary of Gini Coefficients, talk time percentages, and interruption statistics is displayed, exportable locally with a single click.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 10: Future Milestones -->
+      <div class="slide" id="slide-10">
+        <h2 class="slide-title">Future Milestones</h2>
+        <div class="grid-3" style="margin-top: 10px;">
+          <div class="card" style="border-bottom: 3px solid var(--accent-primary);">
+            <div class="card-title" style="font-size: 18px;">SFU Migration</div>
+            <p class="card-desc">Transition from a WebRTC P2P mesh network to an SFU framework (like LiveKit) to scale up to hundreds of concurrent class participants.</p>
+          </div>
+          <div class="card" style="border-bottom: 3px solid var(--accent-primary);">
+            <div class="card-title" style="font-size: 18px;">AI Summarizer</div>
+            <p class="card-desc">Integrate OpenAI/Whisper speech-to-text models to generate automated action summaries alongside participation reports.</p>
+          </div>
+          <div class="card" style="border-bottom: 3px solid var(--accent-primary);">
+            <div class="card-title" style="font-size: 18px;">Network Visuals</div>
+            <p class="card-desc">Add interaction social graphs visualizing who interrupts whom, mapping the social network structure of conversations.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <div class="bottom-bar">
+      <div class="key-hint">
+        <span class="key-cap">←</span>
+        <span class="key-cap">→</span>
+        or Space to navigate slides
+      </div>
+      <div class="controls">
+        <button class="nav-btn" id="prev-btn"><i data-lucide="arrow-left" style="width: 18px; height: 18px;"></i></button>
+        <span class="slide-counter" id="counter" style="display: flex; align-items: center; padding: 0 10px;">Slide 1 / 10</span>
+        <button class="nav-btn" id="next-btn"><i data-lucide="arrow-right" style="width: 18px; height: 18px;"></i></button>
+      </div>
+      
+      <!-- Progress Bar -->
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progress"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Navigation Logic
+    const slides = document.querySelectorAll('.slide');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const counter = document.getElementById('counter');
+    const progress = document.getElementById('progress');
+    
+    let currentSlideIndex = 0;
+    const totalSlides = slides.length;
+
+    function updateSlides() {
+      slides.forEach((slide, idx) => {
+        if (idx === currentSlideIndex) {
+          slide.classList.add('active');
+        } else {
+          slide.classList.remove('active');
+        }
+      });
+      
+      // Update Counter
+      counter.textContent = `Slide ${currentSlideIndex + 1} / ${totalSlides}`;
+      
+      // Update Progress Bar width
+      const percentage = ((currentSlideIndex + 1) / totalSlides) * 100;
+      progress.style.width = `${percentage}%`;
+    }
+
+    function nextSlide() {
+      if (currentSlideIndex < totalSlides - 1) {
+        currentSlideIndex++;
+        updateSlides();
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlideIndex > 0) {
+        currentSlideIndex--;
+        updateSlides();
+      }
+    }
+
+    // Button event listeners
+    nextBtn.addEventListener('click', nextSlide);
+    prevBtn.addEventListener('click', prevSlide);
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        prevSlide();
+      }
+    });
+
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // Initial setup call
+    updateSlides();
+  </script>
+</body>
+</html>
