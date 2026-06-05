@@ -221,6 +221,10 @@
       3000
     );
     addTimelineEvent(`You joined the room as <strong>${userName}</strong>${isHost ? ' (Host)' : ''}`, 'speaking');
+
+    if (!localStream) {
+      initMedia();
+    }
   });
 
   socket.on('user-connected', async ({ socketId, userName: remoteName, peerId: remotePeerId }) => {
